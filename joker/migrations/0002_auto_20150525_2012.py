@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('avatar', '0001_initial'),
+        ('joker', '0001_initial'),
     ]
 
     operations = [
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='intersection',
             name='p',
-            field=models.ForeignKey(to='avatar.Point', null=True),
+            field=models.ForeignKey(to='joker.Point', null=True),
         ),
         migrations.AlterField(
             model_name='pathfragment',
@@ -76,16 +76,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='trajectory',
             name='path',
-            field=models.ForeignKey(to='avatar.Path', null=True),
+            field=models.ForeignKey(to='joker.Path', null=True),
         ),
         migrations.AlterField(
             model_name='trajectory',
             name='trace',
-            field=models.ForeignKey(to='avatar.Trace', null=True),
+            field=models.ForeignKey(to='joker.Trace', null=True),
         ),
         migrations.AddField(
             model_name='sample',
             name='meta',
-            field=models.ManyToManyField(to='avatar.SampleMeta'),
+            field=models.ManyToManyField(to='joker.SampleMeta'),
         ),
     ]

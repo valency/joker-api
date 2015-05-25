@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
                 ('type', models.IntegerField()),
                 ('length', models.IntegerField()),
                 ('speed', models.IntegerField()),
-                ('intersection', models.ManyToManyField(to='avatar.Intersection')),
-                ('p', models.ManyToManyField(to='avatar.Point')),
+                ('intersection', models.ManyToManyField(to='joker.Intersection')),
+                ('p', models.ManyToManyField(to='joker.Point')),
             ],
         ),
         migrations.CreateModel(
@@ -59,14 +59,14 @@ class Migration(migrations.Migration):
                 ('occupy', models.IntegerField()),
                 ('meta', models.CharField(max_length=255)),
                 ('src', models.IntegerField()),
-                ('p', models.ForeignKey(to='avatar.Point')),
+                ('p', models.ForeignKey(to='joker.Point')),
             ],
         ),
         migrations.CreateModel(
             name='Trace',
             fields=[
                 ('id', models.CharField(max_length=36, serialize=False, primary_key=True)),
-                ('p', models.ManyToManyField(to='avatar.Sample')),
+                ('p', models.ManyToManyField(to='joker.Sample')),
             ],
         ),
         migrations.CreateModel(
@@ -74,23 +74,23 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.CharField(max_length=36, serialize=False, primary_key=True)),
                 ('taxi', models.CharField(max_length=255)),
-                ('path', models.ForeignKey(to='avatar.Path')),
-                ('trace', models.ForeignKey(to='avatar.Trace')),
+                ('path', models.ForeignKey(to='joker.Path')),
+                ('trace', models.ForeignKey(to='joker.Trace')),
             ],
         ),
         migrations.AddField(
             model_name='pathfragment',
             name='road',
-            field=models.ForeignKey(to='avatar.Road'),
+            field=models.ForeignKey(to='joker.Road'),
         ),
         migrations.AddField(
             model_name='path',
             name='road',
-            field=models.ManyToManyField(to='avatar.PathFragment'),
+            field=models.ManyToManyField(to='joker.PathFragment'),
         ),
         migrations.AddField(
             model_name='intersection',
             name='p',
-            field=models.ForeignKey(to='avatar.Point'),
+            field=models.ForeignKey(to='joker.Point'),
         ),
     ]

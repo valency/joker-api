@@ -16,7 +16,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'avatar'
+    'joker'
 )
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -62,7 +62,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'template1',
         'USER': 'postgres',
-        'PASSWORD': 'avatar',
+        'PASSWORD': '33b5dadd-c299-4f1c-92ab-e18d02a5a2e2',
         'HOST': 'localhost',
         'PORT': '5432',
     }
