@@ -1,5 +1,3 @@
-import csv
-
 from django.db import models
 
 
@@ -54,39 +52,6 @@ class Customer(models.Model):
     def __str__(self):
         return self.id
 
-    def from_csv(self, src):
-        try:
-            f = open(src, "rb")
-            reader = csv.DictReader(f)
-            for row in reader:
-                try:
-                    self.id = int(row["CUST_ID"])
-                    if "AGE" in row.keys(): self.age = int(row["AGE"])
-                    if "GENDER" in row.keys(): self.gender = row["GENDER"]
-                    if "YRS_W_CLUB" in row.keys(): self.yrs_w_club = int(row["YRS_W_CLUB"])
-                    if "IS_MEMBER" in row.keys(): self.is_member = int(row["IS_MEMBER"]) > 0
-                    if "IS_HRS_OWNER" in row.keys(): self.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
-                    if "MAJOR_CHANNEL" in row.keys(): self.major_channel = row["MAJOR_CHANNEL"]
-                    if "MTG_NUM" in row.keys(): self.mtg_num = int(row["MTG_NUM"])
-                    if "INV" in row.keys(): self.inv = float(row["INV"])
-                    if "INV_SEG1" in row.keys(): self.inv_seg_1 = float(row["INV_SEG1"])
-                    if "INV_SEG2" in row.keys(): self.inv_seg_2 = float(row["INV_SEG2"])
-                    if "INV_SEG3" in row.keys(): self.inv_seg_3 = float(row["INV_SEG3"])
-                    if "DIV" in row.keys(): self.div = float(row["DIV"])
-                    if "RR" in row.keys(): self.rr = float(row["RR"])
-                    if "END_BAL" in row.keys(): self.end_bal = float(row["END_BAL"])
-                    if "RECHARGE_TIMES" in row.keys(): self.recharge_times = int(row["RECHARGE_TIMES"])
-                    if "RECHARGE_AMOUNT" in row.keys(): self.recharge_amount = float(row["RECHARGE_AMOUNT"])
-                    if "WITHDRAW_TIMES" in row.keys(): self.withdraw_times = int(row["WITHDRAW_TIMES"])
-                    if "WITHDRAW_AMOUNT" in row.keys(): self.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
-                    self.save()
-                except TypeError:
-                    continue
-            f.close()
-        except IOError as exp:
-            return {"status": 500, "content": exp.strerror}
-        return {"status": 200, "content": "ok"}
-
     def assign_pred(self, label_prob, reason_code_1, reason_code_2, reason_code_3):
         try:
             pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
@@ -94,5 +59,5 @@ class Customer(models.Model):
             self.prediction = pred
             self.save()
         except TypeError as exp:
-            return {"status": 500, "content": exp.message}
-        return {"status": 200, "content": "ok"}
+            return exp.message
+        return None
