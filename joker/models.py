@@ -19,8 +19,8 @@ class Customer(models.Model):
         ('F', 'Female')
     ), null=True)
     yrs_w_club = models.IntegerField(null=True)
-    is_member = models.BooleanField(null=True)
-    is_hrs_owner = models.BooleanField(null=True)
+    is_member = models.NullBooleanField(default=None)
+    is_hrs_owner = models.NullBooleanField(default=None)
     major_channel = models.CharField(max_length=8, choices=(
         ('AOSBS', 'AOSBS'),
         ('API', 'API'),
@@ -47,7 +47,7 @@ class Customer(models.Model):
     recharge_amount = models.FloatField(null=True)
     withdraw_times = models.IntegerField(null=True)
     withdraw_amount = models.FloatField(null=True)
-    prediction = models.ManyToManyField(Prediction, null=True)
+    prediction = models.ManyToManyField(Prediction)
 
     def __str__(self):
         return self.id
