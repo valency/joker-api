@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 
 from serializers import *
@@ -14,6 +15,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
 
 
+@api_view(['GET'])
 def get_cust_by_id(request):
     if "id" in request.GET:
         try:
@@ -25,6 +27,7 @@ def get_cust_by_id(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
 def remove_cust_by_id(request):
     if "id" in request.GET:
         try:
@@ -37,6 +40,7 @@ def remove_cust_by_id(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
 def add_cust(request):
     if "cust" in request.POST:
         serializer = CustomerSerializer(data=request.POST["cust"])
@@ -48,6 +52,7 @@ def add_cust(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
 def add_cust_from_csv(request):
     if "src" in request.GET:
         count = {
@@ -94,6 +99,7 @@ def add_cust_from_csv(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
 def assign_pred(request):
     if "id" in request.GET and "label_prob" in request.GET and "reason_code_1" in request.GET and "reason_code_2" in request.GET and "reason_code_3" in request.GET:
         try:
@@ -109,6 +115,7 @@ def assign_pred(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
 def assign_pred_from_csv(request):
     if "src" in request.GET:
         count = {
