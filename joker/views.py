@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 
 from serializers import *
+from common import *
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -61,7 +62,7 @@ def add_cust_from_csv(request):
             "fail": 0
         }
         try:
-            f = open(request.GET["src"], "rb")
+            f = open(Common.DATA_PATH + request.GET["src"], "rb")
             reader = csv.DictReader(f)
             for row in reader:
                 count["processed"] += 1
