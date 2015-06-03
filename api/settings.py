@@ -48,6 +48,10 @@ WSGI_APPLICATION = 'api.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
     'PAGE_SIZE': 10
 }
 CORS_ORIGIN_ALLOW_ALL = True
