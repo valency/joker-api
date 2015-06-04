@@ -7,6 +7,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+from django.core import serializers as django_serializers
 
 from serializers import *
 from common import *
@@ -36,7 +37,7 @@ def get_cust_all(request):
             page = int(request.GET["draw"])
             size = int(request.GET["length"])
             cust = Paginator(Customer.objects.all(), size)
-            return Response(CustomerSerializer(cust.page(page)).data)
+            return Response(django_serializers.serialize("json", cust.page(page)))
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except TypeError:
