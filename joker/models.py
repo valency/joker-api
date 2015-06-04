@@ -47,7 +47,7 @@ class Customer(models.Model):
     recharge_amount = models.FloatField(null=True)
     withdraw_times = models.IntegerField(null=True)
     withdraw_amount = models.FloatField(null=True)
-    prediction = models.ForeignKey(Prediction, null=True)
+    prediction = models.ManyToManyField(Prediction)
 
     def __str__(self):
         return self.id
