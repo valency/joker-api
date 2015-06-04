@@ -34,8 +34,13 @@ def get_cust_all(request):
         try:
             page = int(request.GET["draw"])
             size = int(request.GET["length"])
-            cust = Paginator(Customer.objects.all(), size)
-            return Response({"recordsTotal": Customer.objects.count(), "data": CustomerSerializer(cust.page(page), many=True).data})
+            cust = Paginator(Customer.objects.all(), size).page(page)
+            return Response({
+                "draw": page,
+                "recordsTotal": Customer.objects.count(),
+                "recordsFiltered": cust.count(),
+                "data": CustomerSerializer(cust, many=True).data
+            })
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except TypeError:
