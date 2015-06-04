@@ -36,7 +36,7 @@ def get_cust_all(request):
             page = int(request.GET["draw"])
             size = int(request.GET["length"])
             cust = Paginator(Customer.objects.all(), size)
-            return Response(cust.page(page))
+            return Response(cust.page(page).object_list)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except TypeError:
