@@ -30,10 +30,10 @@ def get_cust_by_id(request):
 
 @api_view(['GET'])
 def get_cust_all(request):
-    if "draw" in request.GET and "length" in request.GET:
+    if "start" in request.GET and "length" in request.GET:
         try:
-            page = int(request.GET["draw"])
             size = int(request.GET["length"])
+            page = int(request.GET["start"]) / size + 1
             cust = Paginator(Customer.objects.all(), size).page(page)
             return Response({
                 "draw": page,
