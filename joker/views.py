@@ -3,7 +3,6 @@ import csv
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -112,7 +111,7 @@ def add_cust_from_csv(request):
             f.close()
         except IOError:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response(JSONRenderer().render(count))
+        return Response(count)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -160,7 +159,7 @@ def assign_pred_from_csv(request):
                     count["fail"] += 1
                     continue
             f.close()
-            return Response(JSONRenderer().render(count))
+            return Response(count)
         except IOError:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
