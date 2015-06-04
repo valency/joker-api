@@ -36,7 +36,6 @@ def get_cust_all(request):
             page = int(request.GET["start"]) / size + 1
             cust = Paginator(Customer.objects.all(), size).page(page)
             return Response({
-                "draw": page,
                 "recordsTotal": Customer.objects.count(),
                 "recordsFiltered": Customer.objects.count(),
                 "data": CustomerSerializer(cust, many=True).data
