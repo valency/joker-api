@@ -33,7 +33,7 @@ def get_cust_by_id(request):
 def get_cust_all(request):
     if "draw" in request.GET and "length" in request.GET:
         try:
-            page = int(request.GET["draw"]) - 1
+            page = int(request.GET["draw"])
             size = int(request.GET["length"])
             cust = Paginator(Customer.objects.all(), size)
             return Response(CustomerSerializer(cust.page(page)).data)
