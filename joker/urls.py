@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^api/cust/add/$', views.add_cust),
     url(r'^api/cust/add_cust_from_csv/$', views.add_cust_from_csv),
     url(r'^api/cust/delete/$', views.remove_cust_by_id),
+    url(r'^api/cust/delete_all/$', views.remove_cust_all),
     url(r'^api/cust/assign_pred/$', views.assign_pred),
     url(r'^api/cust/assign_pred_from_csv/$', views.assign_pred_from_csv)
 ]
