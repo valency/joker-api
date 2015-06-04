@@ -31,10 +31,10 @@ def get_cust_by_id(request):
 
 @api_view(['GET'])
 def get_cust_all(request):
-    if "page" in request.GET and "size" in request.GET:
+    if "draw" in request.GET and "length" in request.GET:
         try:
-            page = int(request.GET["page"])
-            size = int(request.GET["size"])
+            page = int(request.GET["draw"]) - 1
+            size = int(request.GET["length"])
             cust = Paginator(Customer.objects.all(), size)
             return Response(CustomerSerializer(cust.page(page)).data)
         except ObjectDoesNotExist:
