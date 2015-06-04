@@ -31,20 +31,20 @@ def get_cust_by_id(request):
 @api_view(['GET'])
 def get_cust_all(request):
     if "draw" in request.GET and "length" in request.GET:
-        # try:
+        try:
             page = int(request.GET["draw"])
             size = int(request.GET["length"])
             cust = Paginator(Customer.objects.all(), size).page(page)
             return Response({
                 "draw": page,
                 "recordsTotal": Customer.objects.count(),
-                "recordsFiltered": cust.count(),
+                "recordsFiltered": Customer.objects.count(),
                 "data": CustomerSerializer(cust, many=True).data
             })
-        # except ObjectDoesNotExist:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
-        # except TypeError:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except TypeError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
