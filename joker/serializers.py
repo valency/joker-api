@@ -9,7 +9,7 @@ class PredictionSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    prediction = PredictionSerializer()
+    prediction = PredictionSerializer(many=True)
 
     class Meta:
         model = Customer
