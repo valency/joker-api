@@ -14,27 +14,11 @@ class Prediction(models.Model):
 class Customer(models.Model):
     id = models.IntegerField(primary_key=True)
     age = models.IntegerField(null=True)
-    gender = models.CharField(max_length=1, choices=(
-        ('M', 'Male'),
-        ('F', 'Female')
-    ), null=True)
+    gender = models.CharField(max_length=1, null=True)
     yrs_w_club = models.IntegerField(null=True)
     is_member = models.NullBooleanField(default=None)
     is_hrs_owner = models.NullBooleanField(default=None)
-    major_channel = models.CharField(max_length=8, choices=(
-        ('AOSBS', 'AOSBS'),
-        ('API', 'API'),
-        ('CIT', 'CIT'),
-        ('ESC', 'ESC'),
-        ('EWIN', 'EWIN'),
-        ('IBUT', 'IBUT'),
-        ('IOSBS', 'IOSBS'),
-        ('MANGO', 'MANGO'),
-        ('MBSN', 'MBSN'),
-        ('MISSING', 'MISSING'),
-        ('MULTI', 'MULTI'),
-        ('TEL', 'TEL')
-    ), null=True)
+    major_channel = models.CharField(max_length=8, null=True)
     mtg_num = models.IntegerField(null=True)
     inv = models.FloatField(null=True)
     inv_seg_1 = models.FloatField(null=True)

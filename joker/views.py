@@ -90,19 +90,13 @@ def add_cust_from_csv(request):
         count = {
             "processed": 0,
             "success": 0,
-            "fail": 0,
-            "override": 0
+            "fail": 0
         }
         try:
             f = open(Common.DATA_PATH + request.GET["src"], "rb")
             reader = csv.DictReader(f)
             for row in reader:
                 count["processed"] += 1
-                try:
-                    Customer.objects.get(id=row["CUST_ID"]).delete()
-                    count["override"] += 1
-                except ObjectDoesNotExist:
-                    pass
                 try:
                     cust = Customer()
                     cust.id = int(row["CUST_ID"])
