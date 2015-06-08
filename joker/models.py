@@ -40,8 +40,14 @@ class Customer(models.Model):
     def assign_pred(self, label_prob, reason_code_1, reason_code_2, reason_code_3):
         try:
             try:
-                pred = Prediction.objects.all().filter(customer=self, label_prob=label_prob)
-                pred.update(reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
+                for pred in self.prediction.all():
+                    if pred.label_prob == label_prob:
+                        # pred = Prediction.objects.all().filter(customer=self, label_prob=label_prob)
+                        # pred.update(reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
+                        pred.reason_code_1 = reason_code_1
+                        pred.reason_code_2 = reason_code_2
+                        pred.reason_code_3 = reason_code_3
+                        pred.save()
             except ObjectDoesNotExist:
                 pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
                 pred.save()
