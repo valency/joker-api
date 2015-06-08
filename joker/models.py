@@ -2,7 +2,8 @@ from django.db import models
 
 
 class Prediction(models.Model):
-    label_prob = models.CharField(max_length=255)
+    id = models.AutoField(primary_key=True)
+    label_prob = models.CharField(max_length=255, primary_key=True)
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
