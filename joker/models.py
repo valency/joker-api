@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Prediction(models.Model):
@@ -39,9 +40,16 @@ class Customer(models.Model):
 
     def assign_pred(self, label_prob, reason_code_1, reason_code_2, reason_code_3):
         try:
-            pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
-            pred.save()
-            self.prediction = pred
+            try:
+                pred = Prediction.objects.all().filter(customer=self, label_prob=label_prob)
+                pred.reason_code_1 = reason_code_1
+                pred.reason_code_2 = reason_code_2
+                pred.reason_code_3 = reason_code_3
+                pred.save()
+            except ObjectDoesNotExist:
+                pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
+                pred.save()
+            self.prediction.add(pred)
             self.save()
         except TypeError as exp:
             return exp.message
