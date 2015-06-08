@@ -4,7 +4,6 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 
 from serializers import *
@@ -156,7 +155,7 @@ def assign_pred_from_csv(request):
             "fail": 0
         }
         try:
-            f = open(request.GET["src"], "rb")
+            f = open(Common.DATA_PATH + request.GET["src"], "rb")
             reader = csv.DictReader(f)
             for row in reader:
                 count["processed"] += 1
