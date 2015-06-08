@@ -89,7 +89,8 @@ def add_cust_from_csv(request):
         count = {
             "processed": 0,
             "success": 0,
-            "fail": 0
+            "fail": 0,
+            "override": 0
         }
         try:
             f = open(Common.DATA_PATH + request.GET["src"], "rb")
@@ -97,8 +98,11 @@ def add_cust_from_csv(request):
             for row in reader:
                 count["processed"] += 1
                 try:
-                    cust = Customer()
-                    cust.id = int(row["CUST_ID"])
+                    cust = Customer.objects.get(id=int(row["CUST_ID"]))
+                    count["override"] += 1
+                except ObjectDoesNotExist:
+                    cust = Customer(id=int(row["CUST_ID"]))
+                try:
                     if "AGE" in row.keys(): cust.age = int(row["AGE"])
                     if "GENDER" in row.keys(): cust.gender = row["GENDER"]
                     if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
