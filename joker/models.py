@@ -3,8 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class Prediction(models.Model):
-    id = models.AutoField(primary_key=True)
-    label_prob = models.CharField(max_length=255, primary_key=True)
+    label_prob = models.CharField(max_length=255)
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
@@ -49,7 +48,7 @@ class Customer(models.Model):
             except ObjectDoesNotExist:
                 pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
                 pred.save()
-            self.prediction.add(pred)
+                self.prediction.add(pred)
             self.save()
         except TypeError as exp:
             return exp.message
