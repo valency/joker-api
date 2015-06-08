@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.paginator import Paginator
+from django.core.exceptions import ObjectDoesNotExist
 
 from serializers import *
 from common import *
@@ -131,10 +132,10 @@ def add_cust_from_csv(request):
 
 @api_view(['GET'])
 def assign_pred(request):
-    if "id" in request.GET and "label_prob" in request.GET and "reason_code_1" in request.GET and "reason_code_2" in request.GET and "reason_code_3" in request.GET:
+    if "id" in request.GET and "label" in request.GET and "prob" in request.GET and "reason_code_1" in request.GET and "reason_code_2" in request.GET and "reason_code_3" in request.GET:
         try:
             cust = Customer.objects.get(id=request.GET["id"])
-            r = cust.assign_pred(request.GET["label_prob"], request.GET["reason_code_1"], request.GET["reason_code_2"], request.GET["reason_code_3"])
+            r = cust.assign_pred(request.GET["label"], request.GET["prob"], request.GET["reason_code_1"], request.GET["reason_code_2"], request.GET["reason_code_3"])
             if r is None:
                 return Response(CustomerSerializer(cust).data)
             else:
@@ -147,7 +148,7 @@ def assign_pred(request):
 
 @api_view(['GET'])
 def assign_pred_from_csv(request):
-    if "src" in request.GET:
+    if "src" in request.GET and "label" in request.GET:
         count = {
             "processed": 0,
             "success": 0,
@@ -160,7 +161,7 @@ def assign_pred_from_csv(request):
                 count["processed"] += 1
                 try:
                     cust = Customer.objects.get(id=int(row["CUST_ID"]))
-                    r = cust.assign_pred(row["LABEL_PROB"], row["REASON_CODE_1"], row["REASON_CODE_2"], row["REASON_CODE_3"])
+                    r = cust.assign_pred(request.GET["label"], row["LABEL_PROB"], row["REASON_CODE_1"], row["REASON_CODE_2"], row["REASON_CODE_3"])
                     if r is None:
                         count["success"] += 1
                     else:

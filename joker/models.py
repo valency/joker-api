@@ -2,7 +2,8 @@ from django.db import models
 
 
 class Prediction(models.Model):
-    label_prob = models.CharField(max_length=255)
+    label = models.CharField(max_length=255)
+    prob = models.FloatField()
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
@@ -36,16 +37,16 @@ class Customer(models.Model):
     def __str__(self):
         return self.id
 
-    def assign_pred(self, label_prob, reason_code_1, reason_code_2, reason_code_3):
+    def assign_pred(self, label, prob, reason_code_1, reason_code_2, reason_code_3):
         try:
             # try:
             # for pred in self.prediction.all():
             #     if pred.label_prob == label_prob:
-            pred = Prediction.objects.all().filter(customer=self, label_prob=label_prob)
+            pred = Prediction.objects.all().filter(customer=self, label=label)
             if pred.count() > 0:
-                pred.update(reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
+                pred.update(prob=prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
             else:
-                pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
+                pred = Prediction(label=label, prob=prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
                 pred.save()
                 self.prediction.add(pred)
                 # pred.reason_code_1 = reason_code_1
