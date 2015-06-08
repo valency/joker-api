@@ -164,7 +164,7 @@ def assign_pred_from_csv(request):
             for row in reader:
                 count["processed"] += 1
                 try:
-                    cust = Customer.objects.get(id=request.GET["id"])
+                    cust = Customer.objects.get(id=int(request.GET["id"]))
                     r = cust.assign_pred(row["LABEL_PROB"], row["REASON_CODE_1"], row["REASON_CODE_2"], row["REASON_CODE_3"])
                     if r is None:
                         count["success"] += 1
