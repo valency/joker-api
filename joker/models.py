@@ -39,24 +39,10 @@ class Customer(models.Model):
 
     def assign_pred(self, label, prob, reason_code_1, reason_code_2, reason_code_3):
         try:
-            # try:
-            # for pred in self.prediction.all():
-            #     if pred.label_prob == label_prob:
-            pred = Prediction.objects.all().filter(customer=self, label=label)
-            if pred.count() > 0:
-                pred.update(prob=prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
-            else:
-                pred = Prediction(label=label, prob=prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
-                pred.save()
-                self.prediction.add(pred)
-                # pred.reason_code_1 = reason_code_1
-                # pred.reason_code_2 = reason_code_2
-                # pred.reason_code_3 = reason_code_3
-                # pred.save()
-                # except ObjectDoesNotExist:
-                #     pred = Prediction(label_prob=label_prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
-                #     pred.save()
-                #     self.prediction.add(pred)
+            Prediction.objects.all().filter(customer=self, label=label).delete()
+            pred = Prediction(label=label, prob=prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
+            pred.save()
+            self.prediction.add(pred)
             self.save()
         except TypeError as exp:
             return exp.message
