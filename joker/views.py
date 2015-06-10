@@ -34,14 +34,15 @@ def get_cust_all(request):
         try:
             size = int(request.GET["length"])
             page = int(request.GET["start"]) / size + 1
-            if "order[0][column]" in request.GET:
-                if "order[0][dir]" in request.GET:
-                    order = "-" if request.GET["order[0][dir]"] == "desc" else ""
-                else:
-                    order = ""
-                cust = Paginator(Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]), size).page(page)
-            else:
-                cust = Paginator(Customer.objects.all(), size).page(page)
+            # if "order[0][column]" in request.GET:
+            #     if "order[0][dir]" in request.GET:
+            #         order = "-" if request.GET["order[0][dir]"] == "desc" else ""
+            #     else:
+            #         order = ""
+            #     cust = Paginator(Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]), size).page(page)
+            # else:
+            #     cust = Paginator(Customer.objects.all(), size).page(page)
+            cust = Paginator(Customer.objects.order_by("prediction__prob"), size).page(page)
             return Response({
                 "draw": int(request.GET["draw"]),
                 "recordsTotal": Customer.objects.count(),
