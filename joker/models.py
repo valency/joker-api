@@ -11,9 +11,6 @@ class Prediction(models.Model):
     def __str__(self):
         return self.cust.id
 
-    class Meta:
-        ordering = ('prob',)
-
 
 class Customer(models.Model):
     id = models.IntegerField(primary_key=True)
