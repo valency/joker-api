@@ -42,7 +42,7 @@ def get_cust_all(request):
                 "data": CustomerSerializer(cust, many=True).data
             }
             if "order[0][column]" in request.GET:
-                resp["sort"] = request.GET["order[0][column]"]
+                resp["sort"] = request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]
             if "order[0][dir]" in request.GET:
                 resp["order"] = request.GET["order[0][dir]"]
             return Response(resp)
