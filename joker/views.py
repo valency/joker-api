@@ -36,7 +36,7 @@ def get_cust_all(request):
             page = int(request.GET["start"]) / size + 1
             if "order[0][column]" in request.GET:
                 if "order[0][dir]" in request.GET:
-                    order = "?" if request.GET["order[0][dir]"] == "desc" else ""
+                    order = "-" if request.GET["order[0][dir]"] == "desc" else ""
                 else:
                     order = ""
                 cust = Paginator(Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]), size).page(page)
