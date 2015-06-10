@@ -39,8 +39,7 @@ def get_cust_all(request):
                     order = "-" if request.GET["order[0][dir]"] == "desc" else ""
                 else:
                     order = ""
-                cust = Paginator(Customer.objects.order_by("prediction.prob"), size).page(page)
-                #                 cust = Paginator(Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]), size).page(page)
+                cust = Paginator(Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]), size).page(page)
             else:
                 cust = Paginator(Customer.objects.all(), size).page(page)
             return Response({
