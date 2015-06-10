@@ -35,12 +35,17 @@ def get_cust_all(request):
             size = int(request.GET["length"])
             page = int(request.GET["start"]) / size + 1
             cust = Paginator(Customer.objects.all(), size).page(page)
-            return Response({
+            resp = {
                 "draw": int(request.GET["draw"]),
                 "recordsTotal": Customer.objects.count(),
                 "recordsFiltered": Customer.objects.count(),
                 "data": CustomerSerializer(cust, many=True).data
-            })
+            }
+            if "order[0][column]" in request.GET:
+                resp["sort"] = request.GET["order[0][column]"]
+            if "order[0][dir]" in request.GET:
+                resp["order"] = request.GET["order[0][dir]"]
+            return Response(resp)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except TypeError:
