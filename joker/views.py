@@ -41,7 +41,7 @@ def get_cust_all(request):
                     order = ""
                 keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]
                 if keyword.startswith("prediction"):
-                    cust = Paginator(Customer.objects.filter(prediction__label='Grow').order_by("prediction__prob"), size).page(page)
+                    cust = Paginator(Customer.objects.filter(prediction__label=keyword.split(".")[1]).order_by(order + "prediction__prob"), size).page(page)
                 else:
                     cust = Paginator(Customer.objects.order_by(order + keyword), size).page(page)
             else:
