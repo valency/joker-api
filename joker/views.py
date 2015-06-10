@@ -39,11 +39,11 @@ def get_cust_all(request):
                     order = "-" if request.GET["order[0][dir]"] == "desc" else ""
                 else:
                     order = ""
-                keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]
-                if keyword.startswith("prediction"):
-                    cust = Paginator(Customer.objects.filter(prediction__label=keyword.split(".")[1]).order_by(order + "prediction__prob"), size).page(page)
+                keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][name]"].split(".")
+                if keyword[0] == "prediction":
+                    cust = Paginator(Customer.objects.filter(prediction__label=keyword[1]).order_by(order + "prediction__prob"), size).page(page)
                 else:
-                    cust = Paginator(Customer.objects.order_by(order + keyword), size).page(page)
+                    cust = Paginator(Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]), size).page(page)
             else:
                 cust = Paginator(Customer.objects.all(), size).page(page)
             return Response({
