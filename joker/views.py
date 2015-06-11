@@ -5,6 +5,7 @@ import numpy
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.paginator import Paginator
@@ -199,7 +200,7 @@ def assign_pred_from_csv(request):
 def histogram(request):
     if "column" in request.GET and "categorical" in request.GET:
         cust = Customer.objects.values_list(request.GET["column"], flat=True)
-        if request.GET["categorical"]:
+        if request.GET["categorical"] == "true":
             hist = numpy.divide(Counter(cust).values(), [float(len(cust))])
             bin_edges = Counter(cust).keys()
         else:
