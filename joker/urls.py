@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^api/cust/delete/$', views.remove_cust_by_id),
     url(r'^api/cust/delete_all/$', views.remove_cust_all),
     url(r'^api/cust/assign_pred/$', views.assign_pred),
-    url(r'^api/cust/assign_pred_from_csv/$', views.assign_pred_from_csv)
+    url(r'^api/cust/assign_pred_from_csv/$', views.assign_pred_from_csv),
+    url(r'^api/cust/histogram/$', views.histogram)
 ]

@@ -1,10 +1,14 @@
 import csv
+from collections import Counter
 
+import numpy
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 from django.core.paginator import Paginator
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from serializers import *
@@ -187,5 +191,24 @@ def assign_pred_from_csv(request):
             return Response(count)
         except IOError:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def histogram(request):
+    if "column" in request.GET and "categorical" in request.GET:
+        cust = Customer.objects.values_list(request.GET["column"], flat=True)
+        if request.GET["categorical"]:
+            hist = numpy.divide(Counter(cust).values(), [float(len(cust))])
+            bin_edges = Counter(cust).keys()
+        else:
+            hist, bin_edges = numpy.histogram(cust, 10)
+            hist = numpy.divide(hist, [float(len(cust))])
+            bin_edges = bin_edges.tolist()
+        return Response({
+            "hist": hist,
+            "bin_edges": bin_edges
+        })
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
