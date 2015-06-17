@@ -3,13 +3,9 @@ from collections import Counter
 
 import numpy
 from rest_framework import viewsets
-
 from rest_framework import status
-
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.paginator import Paginator
 
 from django.core.exceptions import ObjectDoesNotExist
