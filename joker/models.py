@@ -14,6 +14,7 @@ class Prediction(models.Model):
 
 class Customer(models.Model):
     id = models.IntegerField(primary_key=True)
+    cust_code = models.IntegerField(null=True)
     age = models.IntegerField(null=True)
     gender = models.CharField(max_length=1, null=True)
     yrs_w_club = models.IntegerField(null=True)
