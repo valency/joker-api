@@ -79,4 +79,4 @@ class Mathematics:
         #         "cluster": k_means.labels_[i]
         #     })
 
-        return "1"
+        return {"ok": 200}
