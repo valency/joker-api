@@ -57,7 +57,7 @@ class Mathematics:
             else:
                 continue
             # Handle none type
-            if None in cust_column: continue
+            if numpy.isnan(cust_column).any(): continue
             # Stack to matrix
             if cust_matrix.size == 0:
                 cust_matrix = cust_column
