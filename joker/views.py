@@ -2,11 +2,8 @@ import csv
 from collections import Counter
 
 from rest_framework import viewsets, status
-
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.paginator import Paginator
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -225,7 +222,7 @@ def histogram(request):
 
 @api_view(['GET'])
 def kmeans(request):
-    if "header" in request.GET and "weight" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET:
-        return Response(Mathematics.kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"])))
+    if "header" in request.GET and "weight" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET:
+        return Response(Mathematics.kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"])))
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
