@@ -70,8 +70,11 @@ class Mathematics:
         k_means.fit(cust_matrix)
         result = []
         for i in range(0, len(id_list)):
-            result.append({
+            entity = {
                 "id": id_list[i],
                 "cluster": k_means.labels_[i]
-            })
+            }
+            for h in header:
+                entity[h] = Customer.objects.filter(id=id_list[i])[h]
+            result.append(entity)
         return result
