@@ -10,8 +10,8 @@ class Mathematics:
         pass
 
     @staticmethod
-    def kmeans(header, weight, pred_label, order, n_clusters):
-        cust_set = Customer.objects.filter(prediction__label=pred_label).order_by(order + "prediction__prob")
+    def kmeans(header, weight, pred_label, n_clusters):
+        cust_set = Customer.objects.filter(prediction__label=pred_label)
         cust_matrix = numpy.array([])
         id_list = numpy.array([cust.id for cust in cust_set])
         for h in header:
