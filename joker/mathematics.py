@@ -1,8 +1,6 @@
 import numpy
-from sklearn.cluster import KMeans
 from statsmodels.tools import categorical
 
-from common import Common
 from models import *
 
 
@@ -75,4 +73,6 @@ class Mathematics:
         #         "id": id_list[i],
         #         "cluster": k_means.labels_[i]
         #     })
-        return cust_matrix.tolist()
+        with open("log.log", "a") as f:
+            f.write(cust_matrix.tostring())
+        return "1"
