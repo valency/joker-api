@@ -74,7 +74,7 @@ class Mathematics:
                 "id": id_list[i],
                 "cluster": k_means.labels_[i]
             }
-            cust = cust_set.get(id=id_list[i])
+            cust = Customer.objects.get(id=id_list[i])
             for h in header:
                 entity[h] = cust.__dict__[h]
             result.append(entity)
