@@ -65,7 +65,7 @@ class Mathematics:
         # Normalize
         cust_matrix = Common.scale_linear_by_column(cust_matrix)
         # Weight
-        cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array(weight)))
+        cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
         k_means = KMeans(init="k-means++", n_clusters=n_clusters)
         k_means.fit(cust_matrix)
