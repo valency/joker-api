@@ -75,4 +75,4 @@ class Mathematics:
         #         "id": id_list[i],
         #         "cluster": k_means.labels_[i]
         #     })
-        return cust_matrix
+        return cust_matrix.tolist()
