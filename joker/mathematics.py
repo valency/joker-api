@@ -62,17 +62,17 @@ class Mathematics:
                 cust_matrix = cust_column
             else:
                 cust_matrix = numpy.column_stack((cust_matrix, cust_column))
-        # Normalize
-        cust_matrix = Common.scale_linear_by_column(cust_matrix)
-        # Weight
-        cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
-        # Clustering
-        k_means = KMeans(init="k-means++", n_clusters=n_clusters)
-        k_means.fit(cust_matrix)
-        result = []
-        for i in range(0, len(id_list)):
-            result.append({
-                "id": id_list[i],
-                "cluster": k_means.labels_[i]
-            })
-        return result
+        # # Normalize
+        # cust_matrix = Common.scale_linear_by_column(cust_matrix)
+        # # Weight
+        # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
+        # # Clustering
+        # k_means = KMeans(init="k-means++", n_clusters=n_clusters)
+        # k_means.fit(cust_matrix)
+        # result = []
+        # for i in range(0, len(id_list)):
+        #     result.append({
+        #         "id": id_list[i],
+        #         "cluster": k_means.labels_[i]
+        #     })
+        return cust_matrix
