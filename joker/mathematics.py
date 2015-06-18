@@ -56,8 +56,6 @@ class Mathematics:
                 cust_column = numpy.array([cust.withdraw_amount for cust in cust_set])
             else:
                 continue
-            # Handle none type
-            if cust_column[0] is None: continue
             # Stack to matrix
             if cust_matrix.size == 0:
                 cust_matrix = cust_column
