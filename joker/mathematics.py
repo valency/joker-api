@@ -73,6 +73,6 @@ class Mathematics:
         #         "id": id_list[i],
         #         "cluster": k_means.labels_[i]
         #     })
-        with open("log.log", "a") as f:
+        with open("/var/www/api/log.log", "a") as f:
             f.write(cust_matrix.tostring())
         return "1"
