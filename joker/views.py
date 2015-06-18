@@ -117,7 +117,7 @@ def add_cust_from_csv(request):
                 count["processed"] += 1
                 try:
                     cust = Customer(id=int(row["CUST_ID"]))
-                    if "CUST_CODE" in row.keys(): cust.cust_code = int(row["CUST_CODE"])
+                    if "CUST_CODE" in row.keys(): cust.cust_code = row["CUST_CODE"]
                     if "AGE" in row.keys(): cust.age = int(row["AGE"])
                     if "GENDER" in row.keys(): cust.gender = row["GENDER"]
                     if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
