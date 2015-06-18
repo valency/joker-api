@@ -1,8 +1,8 @@
 from statsmodels.tools import categorical
 from sklearn.cluster import KMeans
 
+from models import *
 from common import *
-from serializers import *
 
 
 class Mathematics:
@@ -70,11 +70,12 @@ class Mathematics:
         k_means.fit(cust_matrix)
         result = []
         for i in range(0, len(id_list)):
-            result.append({
+            entity = {
                 "id": id_list[i],
                 "cluster": k_means.labels_[i]
-            })
-        return {
-            "result": result,
-            "cust": CustomerSerializer(cust_set, many=True).data
-        }
+            }
+            cust = cust_set.get(id=id_list[i])
+            for h in header:
+                entity[h] = cust.__dict__[h]
+            result.append(entity)
+        return result
