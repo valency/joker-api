@@ -3,8 +3,11 @@ from collections import Counter
 
 import numpy
 from rest_framework import viewsets
+
 from rest_framework import status
+
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.paginator import Paginator
@@ -46,13 +49,13 @@ def get_cust_all(request):
                 keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][name]"]
                 if keyword.startswith("prediction"):
                     cust_set = Customer.objects.filter(prediction__label=keyword.split(".")[1]).order_by(order + "prediction__prob")
-                    cust = Paginator(cust_set, size).page(page)
                 else:
                     cust_set = Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"])
-                    cust = Paginator(cust_set, size).page(page)
             else:
                 cust_set = Customer.objects.all()
-                cust = Paginator(cust_set, size).page(page)
+            if "cust_code" in request.GET and request.GET["cust_code"] != "":
+                cust_set = cust_set.filter(cust_code=request.GET["cust_code"])
+            cust = Paginator(cust_set, size).page(page)
             return Response({
                 "draw": int(request.GET["draw"]),
                 "recordsTotal": Customer.objects.count(),
