@@ -62,10 +62,10 @@ class Mathematics:
                 cust_matrix = numpy.column_stack((cust_matrix, cust_column))
         # Normalize
         cust_matrix = Common.scale_linear_by_column(cust_matrix)
-
-        numpy.set_printoptions(threshold=numpy.nan)
-        with open("/var/www/api/log.log", "a") as f:
-            f.write(numpy.array_str(cust_matrix))
+        #
+        # numpy.set_printoptions(threshold=numpy.nan)
+        # with open("/var/www/api/log.log", "a") as f:
+        #     f.write(numpy.array_str(cust_matrix))
 
         # Weight
         cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
