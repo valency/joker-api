@@ -63,6 +63,7 @@ class Mathematics:
         # Normalize
         cust_matrix = Common.scale_linear_by_column(cust_matrix)
 
+        numpy.set_printoptions(threshold=numpy.nan)
         with open("/var/www/api/log.log", "a") as f:
             f.write(numpy.array_str(cust_matrix))
 
