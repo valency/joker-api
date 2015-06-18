@@ -12,4 +12,4 @@ class Common:
         mins = numpy.min(rawpoints, axis=0)
         maxs = numpy.max(rawpoints, axis=0)
         rng = maxs - mins
-        return high - (((high - low) * (maxs - rawpoints)) / rng)
+        return numpy.nan_to_num(high - (((high - low) * (maxs - rawpoints)) / rng))
