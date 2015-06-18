@@ -1,5 +1,6 @@
 import numpy
 from sklearn.cluster import KMeans
+from statsmodels.tools import categorical
 
 from common import Common
 from models import *
@@ -18,24 +19,24 @@ class Mathematics:
             # Choose header
             if h == "cust_code":
                 cust_column = numpy.array([cust.cust_code for cust in cust_set])
-                cust_column = Common.categorical(cust_column).argmax(1)
+                cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "age":
                 cust_column = numpy.array([cust.age for cust in cust_set])
-                cust_column = Common.categorical(cust_column).argmax(1)
+                cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "gender":
                 cust_column = numpy.array([cust.gender for cust in cust_set])
-                cust_column = Common.categorical(cust_column).argmax(1)
+                cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "yrs_w_club":
                 cust_column = numpy.array([cust.yrs_w_club for cust in cust_set])
             elif h == "is_member":
                 cust_column = numpy.array([cust.is_member for cust in cust_set])
-                cust_column = Common.categorical(cust_column).argmax(1)
+                cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "is_hrs_owner":
                 cust_column = numpy.array([cust.is_hrs_owner for cust in cust_set])
-                cust_column = Common.categorical(cust_column).argmax(1)
+                cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "major_channel":
                 cust_column = numpy.array([cust.major_channel for cust in cust_set])
-                cust_column = Common.categorical(cust_column).argmax(1)
+                cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "mtg_num":
                 cust_column = numpy.array([cust.mtg_num for cust in cust_set])
             elif h == "inv":

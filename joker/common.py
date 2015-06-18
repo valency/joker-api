@@ -1,5 +1,3 @@
-from collections import Counter
-
 import numpy
 
 
@@ -8,10 +6,6 @@ class Common:
 
     def __init__(self):
         pass
-
-    @staticmethod
-    def categorical(d):
-        return numpy.divide(Counter(d).values(), float(len(d))).tolist(), Counter(d).keys()
 
     @staticmethod
     def scale_linear_by_column(rawpoints, high=1.0, low=0.0):
