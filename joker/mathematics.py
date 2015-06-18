@@ -74,5 +74,5 @@ class Mathematics:
         #         "cluster": k_means.labels_[i]
         #     })
         with open("/var/www/api/log.log", "a") as f:
-            f.write(cust_matrix.tostring())
+            f.write(numpy.array_str(cust_matrix))
         return "1"
