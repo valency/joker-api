@@ -1,17 +1,14 @@
-import csv
 from collections import Counter
+import csv
 
 from rest_framework import viewsets, status
-
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count
-
 from django.core.exceptions import ObjectDoesNotExist
+
+from django.http import HttpResponse
 
 from mathematics import *
 from serializers import *
@@ -57,7 +54,14 @@ def get_cust_all(request):
                 cust_set = cust_set.filter(cust_code__in=str(request.GET["cust_code"]).split(","))
             cust = Paginator(cust_set, size).page(page)
             if "csv" in request.GET and request.GET["csv"] == "true":
-                return Response(CustomerSerializer(cust_set, many=True).data)
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
+                data = CustomerSerializer(cust_set, many=True).data
+                keys = data[0].keys()
+                writer = csv.DictWriter(response, keys)
+                writer.writeheader()
+                writer.writerows(data)
+                return response
             else:
                 return Response({
                     "draw": int(request.GET["draw"]),
