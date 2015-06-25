@@ -66,7 +66,7 @@ def get_cust_all(request):
                         cust_entity["prediction__" + pred_entity["label"].lower()] = pred_entity["prob"]
                     cust_entity.pop("prediction", None)
                     data.append(cust_entity)
-                    keys = keys + set(cust_entity.keys())
+                    keys.union(cust_entity.keys())
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
                 writer = csv.DictWriter(response, fieldnames=list(keys), extrasaction='ignore')
