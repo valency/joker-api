@@ -57,7 +57,7 @@ def get_cust_all(request):
                 cust_set = cust_set.filter(cust_code__in=str(request.GET["cust_code"]).split(","))
             cust = Paginator(cust_set, size).page(page)
             if "csv" in request.GET and request.GET["csv"] == "true":
-                return Response(CustomerSerializer(cust, many=True).data)
+                return Response(CustomerSerializer(cust_set, many=True).data)
             else:
                 return Response({
                     "draw": int(request.GET["draw"]),
