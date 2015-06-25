@@ -56,12 +56,15 @@ def get_cust_all(request):
             if "cust_code" in request.GET and request.GET["cust_code"] != "":
                 cust_set = cust_set.filter(cust_code__in=str(request.GET["cust_code"]).split(","))
             cust = Paginator(cust_set, size).page(page)
-            return Response({
-                "draw": int(request.GET["draw"]),
-                "recordsTotal": Customer.objects.count(),
-                "recordsFiltered": cust_set.count(),
-                "data": CustomerSerializer(cust, many=True).data
-            })
+            if "csv" in request.GET and request.GET["csv"] == "true":
+                return Response(CustomerSerializer(cust, many=True).data)
+            else:
+                return Response({
+                    "draw": int(request.GET["draw"]),
+                    "recordsTotal": Customer.objects.count(),
+                    "recordsFiltered": cust_set.count(),
+                    "data": CustomerSerializer(cust, many=True).data
+                })
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except TypeError:
