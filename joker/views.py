@@ -60,16 +60,16 @@ def get_cust_all(request):
             cust = Paginator(cust_set, size).page(page)
             if "csv" in request.GET and request.GET["csv"] == "true":
                 data = []
-                keys = set()
+                keys = []
                 for cust_entity in CustomerSerializer(cust_set, many=True).data:
                     for pred_entity in cust_entity["prediction"]:
                         cust_entity["prediction__" + pred_entity["label"].lower()] = pred_entity["prob"]
                     cust_entity.pop("prediction", None)
                     data.append(cust_entity)
-                    keys.union(set(cust_entity.keys()))
+                    keys = keys + cust_entity.keys()
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                writer = csv.DictWriter(response, fieldnames=list(keys), restval='')
+                writer = csv.DictWriter(response, fieldnames=list(set(keys)), restval='')
                 writer.writeheader()
                 writer.writerows(data)
                 return response
