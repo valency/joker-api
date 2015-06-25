@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^api/cust/assign_pred/$', views.assign_pred),
     url(r'^api/cust/assign_pred_from_csv/$', views.assign_pred_from_csv),
     url(r'^api/cust/histogram/$', views.histogram),
-    url(r'^api/cust/kmeans/$', views.kmeans)
+    url(r'^api/cust/kmeans/$', views.kmeans),
+    url(r'^api/cust/dist/$', views.cust_dist)
 ]
