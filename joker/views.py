@@ -3,8 +3,11 @@ import csv
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
+
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -56,15 +59,16 @@ def get_cust_all(request):
             cust = Paginator(cust_set, size).page(page)
             if "csv" in request.GET and request.GET["csv"] == "true":
                 data = []
+                keys = set()
                 for cust_entity in CustomerSerializer(cust_set, many=True).data:
                     for pred_entity in cust_entity["prediction"]:
                         cust_entity["prediction__" + pred_entity["label"].lower()] = pred_entity["prob"]
                     cust_entity.pop("prediction", None)
                     data.append(cust_entity)
+                    keys = keys + set(cust_entity.keys())
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                keys = data[0].keys()
-                writer = csv.DictWriter(response, keys)
+                writer = csv.DictWriter(response, fieldnames=list(keys), extrasaction='ignore')
                 writer.writeheader()
                 writer.writerows(data)
                 return response
