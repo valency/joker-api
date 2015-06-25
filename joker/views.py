@@ -2,6 +2,7 @@ import csv
 from collections import Counter
 
 from rest_framework import viewsets, status
+
 from rest_framework.response import Response
 
 from rest_framework.decorators import api_view
@@ -235,6 +236,6 @@ def kmeans(request):
 @api_view(['GET'])
 def cust_dist(request):
     if "column" in request.GET:
-        return Response(Customer.objects.all().values(request.GET["column"]).annotate(total=Count(request.GET["column"])).order_by('total'))
+        return Response(Customer.objects.all().values(request.GET["column"]).annotate(total=Count(request.GET["column"])).order_by('-total'))
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
