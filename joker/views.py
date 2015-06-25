@@ -69,7 +69,7 @@ def get_cust_all(request):
                     keys = keys + cust_entity.keys()
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                writer = csv.DictWriter(response, fieldnames=list(set(keys)), restval='')
+                writer = csv.DictWriter(response, fieldnames=list(set(keys)).sort(), restval='')
                 writer.writeheader()
                 writer.writerows(data)
                 return response
