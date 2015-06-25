@@ -54,14 +54,14 @@ def get_cust_all(request):
             else:
                 cust_set = Customer.objects.all()
             if "cust_code" in request.GET and request.GET["cust_code"] != "":
-                cust_set = cust_set.filter(cust_code__in=request.GET["cust_code"].split(";"))
+                cust_set = cust_set.filter(cust_code__in=request.GET["cust_code"].split(","))
             cust = Paginator(cust_set, size).page(page)
             return Response({
                 "draw": int(request.GET["draw"]),
                 "recordsTotal": Customer.objects.count(),
                 "recordsFiltered": cust_set.count(),
                 "data": CustomerSerializer(cust, many=True).data,
-                "q": request.GET["cust_code"].split(";")
+                "q": request.GET["cust_code"].split(",")
             })
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
