@@ -60,8 +60,7 @@ def get_cust_all(request):
                 "draw": int(request.GET["draw"]),
                 "recordsTotal": Customer.objects.count(),
                 "recordsFiltered": cust_set.count(),
-                "data": CustomerSerializer(cust, many=True).data,
-                "q": str(request.GET["cust_code"]).split(",")
+                "data": CustomerSerializer(cust, many=True).data
             })
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
