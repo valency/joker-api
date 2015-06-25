@@ -2,6 +2,7 @@ from collections import Counter
 import csv
 
 from rest_framework import viewsets, status
+
 from rest_framework.response import Response
 
 from rest_framework.decorators import api_view
@@ -81,8 +82,6 @@ def get_cust_all(request):
                 })
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        except TypeError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
