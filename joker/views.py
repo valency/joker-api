@@ -2,13 +2,9 @@ from collections import Counter
 import csv
 
 from rest_framework import viewsets, status
-
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -253,5 +249,16 @@ def kmeans(request):
 def cust_dist(request):
     if "column" in request.GET:
         return Response(Customer.objects.all().values(request.GET["column"]).annotate(total=Count(request.GET["column"])).order_by('-total'))
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def csv_to_json(request):
+    if "src" in request.GET:
+        with open(Common.DATA_PATH + request.GET["src"], "rb") as f:
+            reader = csv.reader(f)
+            resp = {row[0]: row[1] for row in reader}
+        return Response(resp)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
