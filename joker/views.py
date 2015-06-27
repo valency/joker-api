@@ -26,7 +26,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def login(request):
     if "username" in request.POST and "password" in request.POST:
-        if request.POST["username"] == "smartcube" and request.POST["password"] == "900150983cd24fb0d6963f7d28e17f72":
+        if request.POST["username"] == "smartcube" and request.POST["password"] == "f6a601abb9191a636ca79a2328a0a226":
             return Response({"status": "ok"})
         else:
             return Response({"status": "fail"})
