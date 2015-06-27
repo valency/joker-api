@@ -4,7 +4,9 @@ import csv
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,6 +21,17 @@ from common import *
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+@api_view(['POST'])
+def login(request):
+    if "username" in request.POST and "password" in request.POST:
+        if request.POST["username"] == "smartcube" and request.POST["password"] == "900150983cd24fb0d6963f7d28e17f72":
+            return Response({"status": "ok"})
+        else:
+            return Response({"status": "fail"})
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
