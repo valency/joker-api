@@ -3,6 +3,7 @@ import csv
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.paginator import Paginator
@@ -260,7 +261,10 @@ def csv_to_json(request):
     if "src" in request.GET:
         with open(Common.DATA_PATH + request.GET["src"], "rb") as f:
             reader = csv.DictReader(f)
-            resp = [row for row in reader]
-        return Response(resp)
+            content = [row for row in reader]
+        return Response({
+            "header": reader.fieldnames,
+            "content": content
+        })
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
