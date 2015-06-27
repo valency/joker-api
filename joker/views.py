@@ -3,11 +3,8 @@ import csv
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -28,7 +25,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 def get_cust_by_id(request):
     if "id" in request.GET:
         try:
-            cust = Customer.objects.get(id=request.GET["id"])
+            cust = Customer.objects.get(id=int(request.GET["id"]))
             return Response(CustomerSerializer(cust).data)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
