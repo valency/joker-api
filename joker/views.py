@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.paginator import Paginator
 
 from django.http import HttpResponse
@@ -35,7 +36,7 @@ def register(request):
     if "username" in request.POST and "password" in request.POST:
         user = User.objects.create_user(username=request.POST["username"], password=request.POST["password"])
         user.save()
-        conf = Configuration()
+        conf = Configuration(export_mode="csv")
         conf.save()
         account = Account(auth=user, conf=conf)
         account.save()
