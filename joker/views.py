@@ -37,7 +37,7 @@ def register(request):
         user.save()
         conf = Configuration()
         conf.save()
-        account = Account(user=user, conf=conf)
+        account = Account(auth=user, conf=conf)
         account.save()
         return Response(AccountSerializer(account).data)
     else:
