@@ -3,13 +3,9 @@ import csv
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.db.models import Count
-
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.core.paginator import Paginator
 
 from django.http import HttpResponse
@@ -27,6 +23,11 @@ class AccountViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 @api_view(['POST'])
