@@ -1,4 +1,5 @@
 import numpy
+from django.contrib.auth import authenticate
 
 
 class Common:
@@ -13,3 +14,11 @@ class Common:
         maxs = numpy.max(rawpoints, axis=0)
         rng = maxs - mins
         return numpy.nan_to_num(high - (((high - low) * (maxs - rawpoints)) / rng))
+
+    @staticmethod
+    def user_auth(username, password):
+        user = authenticate(username=username, password=password)
+        if user is not None and user.is_active:
+            return user
+        else:
+            return None

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Prediction(models.Model):
@@ -7,9 +8,6 @@ class Prediction(models.Model):
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
-
-    def __str__(self):
-        return self.cust.id
 
 
 class Customer(models.Model):
@@ -48,3 +46,21 @@ class Customer(models.Model):
         except TypeError as exp:
             return exp.message
         return None
+
+
+class Configuration(models.Model):
+    export_mode = models.CharField(
+        max_length=16,
+        choices=(
+            ('csv', 'Comma-Separated Values'),
+            ('xlsx', 'Microsoft Excel Workbook')
+        ),
+        default='csv')
+
+
+class Account(models.Model):
+    auth = models.OneToOneField(User)
+    conf = models.OneToOneField(Configuration)
+
+    def __str__(self):
+        return self.auth.id

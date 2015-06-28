@@ -13,3 +13,21 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
+
+
+class ConfigurationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Configuration
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    auth = UserSerializer
+    conf = ConfigurationSerializer
+
+    class Meta:
+        model = Account

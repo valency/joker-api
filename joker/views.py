@@ -3,13 +3,14 @@ import csv
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 
-from django.core.paginator import Paginator
+from rest_framework.decorators import api_view
 
 from django.db.models import Count
 
 from django.core.exceptions import ObjectDoesNotExist
+
+from django.core.paginator import Paginator
 
 from django.http import HttpResponse
 
@@ -18,18 +19,57 @@ from serializers import *
 from common import *
 
 
+class AccountViewSet(viewsets.ModelViewSet):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
 
 
 @api_view(['POST'])
+def register(request):
+    if "username" in request.POST and "password" in request.POST:
+        user = User.objects.create_user(username=request.POST["username"], password=request.POST["password"])
+        user.save()
+        conf = Configuration()
+        conf.save()
+        account = Account(user=user, conf=conf)
+        account.save()
+        return Response(AccountSerializer(account).data)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def change_password(request):
+    if "id" in request.POST and "old" in request.POST and "new" in request.POST:
+        try:
+            account = Account.objects.get(id=request.POST["id"])
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        user = Common.user_auth(account.auth.username, request.POST["old"])
+        if user is not None:
+            user.set_password(request.POST["new"])
+            user.save()
+            return Response(AccountSerializer(account).data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
 def login(request):
     if "username" in request.POST and "password" in request.POST:
-        if request.POST["username"] == "smartcube" and request.POST["password"] == "f6a601abb9191a636ca79a2328a0a226":
-            return Response({"status": "ok"})
+        user = Common.user_auth(request.POST["username"], request.POST["password"])
+        if user is not None:
+            account = Account.objects.get(auth=user)
+            return Response(AccountSerializer(account).data)
         else:
-            return Response({"status": "fail"})
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
