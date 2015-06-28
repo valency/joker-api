@@ -9,6 +9,9 @@ class Prediction(models.Model):
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
 
+    def __str__(self):
+        return self.id
+
 
 class Customer(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -57,10 +60,13 @@ class Configuration(models.Model):
         ),
         default='csv')
 
+    def __str__(self):
+        return self.id
+
 
 class Account(models.Model):
     auth = models.OneToOneField(User)
     conf = models.OneToOneField(Configuration)
 
     def __str__(self):
-        return self.auth.id
+        return self.id
