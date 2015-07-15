@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -117,6 +118,12 @@ def get_cust_all(request):
                 cust_set = cust_set.order_by(order + keyword)
             else:
                 cust_set = cust_set.all()
+            return Response({
+                "draw": int(request.GET["draw"])
+            })
+
+
+
             # Handle segment
             if "segment" in request.GET and request.GET["segment"] != "":
                 cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
