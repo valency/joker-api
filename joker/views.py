@@ -5,9 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -119,25 +117,18 @@ def get_cust_all(request):
                 cust_set = cust_set.order_by(order + keyword)
             else:
                 cust_set = cust_set.all()
-            return Response({
-                "draw": int(request.GET["draw"]),
-                "recordsFiltered": cust_set.count()
-            })
-
-
-
             # Handle segment
             if "segment" in request.GET and request.GET["segment"] != "":
                 cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
             # Export
-            if model == 1:
-                data_set = Customer1Serializer(cust_set, many=True).data
-            elif model == 2:
-                data_set = Customer2Serializer(cust_set, many=True).data
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
             if "csv" in request.GET and request.GET["csv"] == "true":
                 data = []
+                if model == 1:
+                    data_set = Customer1Serializer(cust_set, many=True).data
+                elif model == 2:
+                    data_set = Customer2Serializer(cust_set, many=True).data
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
                 for cust_entity in data_set:
                     data.append(cust_entity)
                 response = HttpResponse(content_type='text/csv')
