@@ -10,14 +10,20 @@ class Mathematics:
         pass
 
     @staticmethod
-    def kmeans(header, weight, pred_label, n_clusters, n_records):
-        cust_set = Customer.objects.filter(prediction__label=pred_label).order_by("-prediction__prob")[:n_records]
+    def kmeans(header, weight, pred_label, n_clusters, n_records, model):
+        if model == 1:
+            cust_obj = Customer1.objects
+        elif model == 2:
+            cust_obj = Customer2.objects
+        else:
+            return None
+        cust_set = cust_obj.order_by("-" + pred_label)[:n_records]
         cust_matrix = numpy.array([])
         id_list = numpy.array([cust.id for cust in cust_set])
         for h in header:
             # Choose header
-            if h == "cust_code":
-                cust_column = numpy.array([cust.cust_code for cust in cust_set])
+            if h == "segment":
+                cust_column = numpy.array([cust.segment for cust in cust_set])
                 cust_column = categorical(cust_column, drop=True).argmax(1)
             elif h == "age":
                 cust_column = numpy.array([cust.age for cust in cust_set])
@@ -74,7 +80,7 @@ class Mathematics:
                 "id": id_list[i],
                 "cluster": k_means.labels_[i]
             }
-            cust = Customer.objects.get(id=id_list[i])
+            cust = cust_obj.get(id=id_list[i])
             for h in header:
                 entity[h] = cust.__dict__[h]
             result.append(entity)

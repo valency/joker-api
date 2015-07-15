@@ -2,15 +2,27 @@ from collections import Counter
 import csv
 
 from rest_framework import viewsets, status
+
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
+
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.paginator import Paginator
+
 from django.db.models import Count
+
 from django.http import HttpResponse
+
 from mathematics import *
 from serializers import *
 from common import *
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -18,14 +30,14 @@ class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = AccountSerializer
 
 
-class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+class Customer1ViewSet(viewsets.ModelViewSet):
+    queryset = Customer1.objects.all()
+    serializer_class = Customer1Serializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class Customer2ViewSet(viewsets.ModelViewSet):
+    queryset = Customer2.objects.all()
+    serializer_class = Customer2Serializer
 
 
 @api_view(['POST'])
@@ -35,7 +47,7 @@ def register(request):
         user.save()
         conf = Configuration(export_mode="csv")
         conf.save()
-        account = Account(auth=user, conf=conf)
+        account = Account(user=user, conf=conf)
         account.save()
         return Response(AccountSerializer(account).data)
     else:
@@ -49,10 +61,9 @@ def change_password(request):
             account = Account.objects.get(id=request.POST["id"])
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        user = Common.user_auth(account.auth.username, request.POST["old"])
-        if user is not None:
-            user.set_password(request.POST["new"])
-            user.save()
+        if account.auth(request.POST["old"]):
+            account.user.set_password(request.POST["new"])
+            account.save()
             return Response(AccountSerializer(account).data)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -63,9 +74,9 @@ def change_password(request):
 @api_view(['POST'])
 def login(request):
     if "username" in request.POST and "password" in request.POST:
-        user = Common.user_auth(request.POST["username"], request.POST["password"])
-        if user is not None:
-            account = Account.objects.get(auth=user)
+        user = authenticate(username=request.POST["username"], password=request.POST["password"])
+        if user is not None and user.is_active:
+            account = Account.objects.get(user=user)
             return Response(AccountSerializer(account).data)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -75,10 +86,15 @@ def login(request):
 
 @api_view(['GET'])
 def get_cust_by_id(request):
-    if "id" in request.GET:
+    if "id" in request.GET and "model" in request.GET:
         try:
-            cust = Customer.objects.get(id=int(request.GET["id"]))
-            return Response(CustomerSerializer(cust).data)
+            model = int(request.GET["model"])
+            if model == 1:
+                return Response(Customer1Serializer(Customer1.objects.get(id=int(request.GET["id"]))).data)
+            elif model == 2:
+                return Response(Customer2Serializer(Customer2.objects.get(id=int(request.GET["id"]))).data)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
@@ -87,60 +103,61 @@ def get_cust_by_id(request):
 
 @api_view(['GET'])
 def get_cust_all(request):
-    if "draw" in request.GET and "start" in request.GET and "length" in request.GET:
+    if "draw" in request.GET and "start" in request.GET and "length" in request.GET and "model" in request.GET:
         try:
+            model = int(request.GET["model"])
             size = int(request.GET["length"])
             page = int(request.GET["start"]) / size + 1
-            if "order[0][column]" in request.GET:
-                if "order[0][dir]" in request.GET:
-                    order = "-" if request.GET["order[0][dir]"] == "desc" else ""
-                else:
-                    order = ""
-                keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][name]"]
-                if keyword.startswith("prediction"):
-                    cust_set = Customer.objects.filter(prediction__label=keyword.split(".")[1]).order_by(order + "prediction__prob")
-                else:
-                    cust_set = Customer.objects.order_by(order + request.GET["columns[" + request.GET["order[0][column]"] + "][data]"])
+            # Handle model
+            if model == 1:
+                cust_set = Customer1.objects
+            elif model == 2:
+                cust_set = Customer2.objects
             else:
-                cust_set = Customer.objects.all()
-            if "cust_code" in request.GET and request.GET["cust_code"] != "":
-                cust_set = cust_set.filter(cust_code__in=str(request.GET["cust_code"]).split(","))
-            cust = Paginator(cust_set, size).page(page)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            # Handle order
+            if "order[0][column]" in request.GET:
+                order = "-" if "order[0][dir]" in request.GET and request.GET["order[0][dir]"] == "desc" else ""
+                keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]
+                cust_set = cust_set.order_by(order + keyword)
+            else:
+                cust_set = cust_set.all()
+            # Handle segment
+            if "segment" in request.GET and request.GET["segment"] != "":
+                cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
+            # Export
+            if model == 1:
+                data_set = Customer1Serializer(cust_set, many=True).data
+            elif model == 2:
+                data_set = Customer2Serializer(cust_set, many=True).data
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             if "csv" in request.GET and request.GET["csv"] == "true":
                 data = []
-                keys = []
-                for cust_entity in CustomerSerializer(cust_set, many=True).data:
-                    for pred_entity in cust_entity["prediction"]:
-                        cust_entity["prediction__" + pred_entity["label"].lower()] = pred_entity["prob"]
-                    cust_entity.pop("prediction", None)
+                for cust_entity in data_set:
                     data.append(cust_entity)
-                    keys = keys + cust_entity.keys()
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                writer = csv.DictWriter(response, fieldnames=sorted(list(set(keys))), restval='')
+                writer = csv.DictWriter(response, fieldnames=data_set[0].keys(), restval='')
                 writer.writeheader()
                 writer.writerows(data)
                 return response
             else:
+                cust_page = Paginator(cust_set, size).page(page)
+                if model == 1:
+                    total = Customer1.objects.count()
+                    data = Customer1Serializer(cust_page, many=True).data
+                elif model == 2:
+                    total = Customer2.objects.count()
+                    data = Customer2Serializer(cust_page, many=True).data
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
                 return Response({
                     "draw": int(request.GET["draw"]),
-                    "recordsTotal": Customer.objects.count(),
+                    "recordsTotal": total,
                     "recordsFiltered": cust_set.count(),
-                    "data": CustomerSerializer(cust, many=True).data
+                    "data": data
                 })
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def remove_cust_by_id(request):
-    if "id" in request.GET:
-        try:
-            cust = Customer.objects.get(id=request.GET["id"])
-            cust.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
@@ -150,28 +167,17 @@ def remove_cust_by_id(request):
 @api_view(['GET'])
 def remove_cust_all(request):
     try:
-        cust = Customer.objects.all()
-        cust.delete()
+        Customer1.objects.all().delete()
+        Customer2.objects.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['POST'])
-def add_cust(request):
-    if "cust" in request.POST:
-        serializer = CustomerSerializer(data=request.POST["cust"])
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(['GET'])
 def add_cust_from_csv(request):
-    if "src" in request.GET:
+    if "src" in request.GET and "model" in request.GET:
+        model = int(request.GET["model"])
         count = {
             "processed": 0,
             "success": 0,
@@ -183,26 +189,48 @@ def add_cust_from_csv(request):
             for row in reader:
                 count["processed"] += 1
                 try:
-                    cust = Customer(id=int(row["CUST_ID"]))
-                    if "CUST_CODE" in row.keys(): cust.cust_code = row["CUST_CODE"]
-                    if "AGE" in row.keys(): cust.age = int(row["AGE"])
-                    if "GENDER" in row.keys(): cust.gender = row["GENDER"]
-                    if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
-                    if "IS_MEMBER" in row.keys(): cust.is_member = int(row["IS_MEMBER"]) > 0
-                    if "IS_HRS_OWNER" in row.keys(): cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
-                    if "MAJOR_CHANNEL" in row.keys(): cust.major_channel = row["MAJOR_CHANNEL"]
-                    if "MTG_NUM" in row.keys(): cust.mtg_num = int(row["MTG_NUM"])
-                    if "INV" in row.keys(): cust.inv = float(row["INV"])
-                    if "INV_SEG1" in row.keys(): cust.inv_seg_1 = float(row["INV_SEG1"])
-                    if "INV_SEG2" in row.keys(): cust.inv_seg_2 = float(row["INV_SEG2"])
-                    if "INV_SEG3" in row.keys(): cust.inv_seg_3 = float(row["INV_SEG3"])
-                    if "DIV" in row.keys(): cust.div = float(row["DIV"])
-                    if "RR" in row.keys(): cust.rr = float(row["RR"])
-                    if "END_BAL" in row.keys(): cust.end_bal = float(row["END_BAL"])
-                    if "RECHARGE_TIMES" in row.keys(): cust.recharge_times = int(row["RECHARGE_TIMES"])
-                    if "RECHARGE_AMOUNT" in row.keys(): cust.recharge_amount = float(row["RECHARGE_AMOUNT"])
-                    if "WITHDRAW_TIMES" in row.keys(): cust.withdraw_times = int(row["WITHDRAW_TIMES"])
-                    if "WITHDRAW_AMOUNT" in row.keys(): cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
+                    if model == 1:
+                        cust = Customer1(id=int(row["CUST_ID"]))
+                        if "SEGMENT" in row.keys(): cust.segment = row["SEGMENT"]
+                        if "AGE" in row.keys(): cust.age = int(row["AGE"])
+                        if "GENDER" in row.keys(): cust.gender = row["GENDER"]
+                        if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
+                        if "IS_MEMBER" in row.keys(): cust.is_member = int(row["IS_MEMBER"]) > 0
+                        if "IS_HRS_OWNER" in row.keys(): cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
+                        if "MAJOR_CHANNEL" in row.keys(): cust.major_channel = row["MAJOR_CHANNEL"]
+                        if "MTG_NUM" in row.keys(): cust.mtg_num = int(row["MTG_NUM"])
+                        if "INV" in row.keys(): cust.inv = float(row["INV"])
+                        if "DIV" in row.keys(): cust.div = float(row["DIV"])
+                        if "RR" in row.keys(): cust.rr = float(row["RR"])
+                        if "END_BAL" in row.keys(): cust.end_bal = float(row["END_BAL"])
+                        if "RECHARGE_TIMES" in row.keys(): cust.recharge_times = int(row["RECHARGE_TIMES"])
+                        if "RECHARGE_AMOUNT" in row.keys(): cust.recharge_amount = float(row["RECHARGE_AMOUNT"])
+                        if "WITHDRAW_TIMES" in row.keys(): cust.withdraw_times = int(row["WITHDRAW_TIMES"])
+                        if "WITHDRAW_AMOUNT" in row.keys(): cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
+                        if "GROW_PROPENSITY" in row.keys(): cust.grow_prop = float(row["GROW_PROPENSITY"])
+                        if "DECLINE_PROPENSITY" in row.keys(): cust.decline_prop = float(row["DECLINE_PROPENSITY"])
+                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = float(row["REASON_CODE_1"])
+                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = float(row["REASON_CODE_2"])
+                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = float(row["REASON_CODE_3"])
+                    elif model == 2:
+                        cust = Customer2(id=int(row["CUST_ID"]))
+                        if "SEGMENT" in row.keys(): cust.segment = row["SEGMENT"]
+                        if "AGE" in row.keys(): cust.age = int(row["AGE"])
+                        if "GENDER" in row.keys(): cust.gender = row["GENDER"]
+                        if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
+                        if "IS_MEMBER" in row.keys(): cust.is_member = int(row["IS_MEMBER"]) > 0
+                        if "IS_HRS_OWNER" in row.keys(): cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
+                        if "MAJOR_CHANNEL" in row.keys(): cust.major_channel = row["MAJOR_CHANNEL"]
+                        if "MTG_NUM" in row.keys(): cust.mtg_num = int(row["MTG_NUM"])
+                        if "INV" in row.keys(): cust.inv = float(row["INV"])
+                        if "DIV" in row.keys(): cust.div = float(row["DIV"])
+                        if "RR" in row.keys(): cust.rr = float(row["RR"])
+                        if "REGULAR_PROPENSITY" in row.keys(): cust.regular_prop = float(row["REGULAR_PROPENSITY"])
+                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = float(row["REASON_CODE_1"])
+                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = float(row["REASON_CODE_2"])
+                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = float(row["REASON_CODE_3"])
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST)
                     cust.save()
                     count["success"] += 1
                 except TypeError:
@@ -217,63 +245,16 @@ def add_cust_from_csv(request):
 
 
 @api_view(['GET'])
-def assign_pred(request):
-    if "id" in request.GET and "label" in request.GET and "prob" in request.GET and "reason_code_1" in request.GET and "reason_code_2" in request.GET and "reason_code_3" in request.GET:
-        try:
-            cust = Customer.objects.get(id=request.GET["id"])
-            r = cust.assign_pred(request.GET["label"], request.GET["prob"], request.GET["reason_code_1"], request.GET["reason_code_2"], request.GET["reason_code_3"])
-            if r is None:
-                return Response(CustomerSerializer(cust).data)
-            else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def assign_pred_from_csv(request):
-    if "src" in request.GET and "label" in request.GET:
-        count = {
-            "processed": 0,
-            "success": 0,
-            "fail": 0
-        }
-        try:
-            f = open(Common.DATA_PATH + request.GET["src"], "rb")
-            reader = csv.DictReader(f)
-            for row in reader:
-                count["processed"] += 1
-                try:
-                    cust = Customer.objects.get(id=int(row["CUST_ID"]))
-                    r = cust.assign_pred(request.GET["label"], row["LABEL_PROB"], row["REASON_CODE_1"], row["REASON_CODE_2"], row["REASON_CODE_3"])
-                    if r is None:
-                        count["success"] += 1
-                    else:
-                        count["fail"] += 1
-                except TypeError:
-                    count["fail"] += 1
-                    continue
-                except ObjectDoesNotExist:
-                    count["fail"] += 1
-                    continue
-            f.close()
-            return Response(count)
-        except IOError:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
 def histogram(request):
-    if "column" in request.GET and "categorical" in request.GET:
+    if "column" in request.GET and "categorical" in request.GET and "model" in request.GET:
         column = request.GET["column"]
-        if column.startswith("prediction"):
-            cust = Customer.objects.filter(prediction__label=column.split(".")[1]).values_list("prediction__prob", flat=True)
+        model = int(request.GET["model"])
+        if model == 1:
+            cust = Customer1.objects.values_list(column, flat=True)
+        elif model == 2:
+            cust = Customer2.objects.values_list(column, flat=True)
         else:
-            cust = Customer.objects.values_list(column, flat=True)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         if request.GET["categorical"] == "true":
             hist = numpy.divide(Counter(cust).values(), [float(len(cust))])
             bin_edges = Counter(cust).keys()
@@ -291,16 +272,27 @@ def histogram(request):
 
 @api_view(['GET'])
 def kmeans(request):
-    if "header" in request.GET and "weight" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET:
-        return Response(Mathematics.kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"])))
+    if "header" in request.GET and "weight" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET and "model" in request.GET:
+        result = Mathematics.kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"]), int(request.GET["model"]))
+        if result is not None:
+            return Response(result)
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
 def cust_dist(request):
-    if "column" in request.GET:
-        return Response(Customer.objects.all().values(request.GET["column"]).annotate(total=Count(request.GET["column"])).order_by('-total'))
+    if "column" in request.GET and "model" in request.GET:
+        model = int(request.GET["model"])
+        if model == 1:
+            cust = Customer1.objects.all()
+        elif model == 2:
+            cust = Customer2.objects.all()
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(cust.values(request.GET["column"]).annotate(total=Count(request.GET["column"])).order_by('-total'))
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

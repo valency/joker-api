@@ -3,16 +3,14 @@ from rest_framework import serializers
 from models import *
 
 
-class PredictionSerializer(serializers.ModelSerializer):
+class Customer1Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Prediction
+        model = Customer1
 
 
-class CustomerSerializer(serializers.ModelSerializer):
-    prediction = PredictionSerializer(many=True)
-
+class Customer2Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Customer
+        model = Customer2
 
 
 class ConfigurationSerializer(serializers.ModelSerializer):
@@ -26,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    auth = UserSerializer
+    user = UserSerializer
     conf = ConfigurationSerializer
 
     class Meta:

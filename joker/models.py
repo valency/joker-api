@@ -1,21 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 
-class Prediction(models.Model):
-    label = models.CharField(max_length=255)
-    prob = models.FloatField()
-    reason_code_1 = models.CharField(max_length=255, null=True)
-    reason_code_2 = models.CharField(max_length=255, null=True)
-    reason_code_3 = models.CharField(max_length=255, null=True)
-
-    def __str__(self):
-        return self.id
-
-
-class Customer(models.Model):
+class Customer1(models.Model):
     id = models.IntegerField(primary_key=True)
-    cust_code = models.CharField(max_length=4, null=True)
+    segment = models.CharField(max_length=4, null=True)
     age = models.IntegerField(null=True)
     gender = models.CharField(max_length=1, null=True)
     yrs_w_club = models.IntegerField(null=True)
@@ -24,9 +14,6 @@ class Customer(models.Model):
     major_channel = models.CharField(max_length=8, null=True)
     mtg_num = models.IntegerField(null=True)
     inv = models.FloatField(null=True)
-    inv_seg_1 = models.FloatField(null=True)
-    inv_seg_2 = models.FloatField(null=True)
-    inv_seg_3 = models.FloatField(null=True)
     div = models.FloatField(null=True)
     rr = models.FloatField(null=True)
     end_bal = models.FloatField(null=True)
@@ -34,21 +21,36 @@ class Customer(models.Model):
     recharge_amount = models.FloatField(null=True)
     withdraw_times = models.IntegerField(null=True)
     withdraw_amount = models.FloatField(null=True)
-    prediction = models.ManyToManyField(Prediction)
+    grow_prop = models.FloatField()
+    decline_prop = models.FloatField()
+    reason_code_1 = models.CharField(max_length=255, null=True)
+    reason_code_2 = models.CharField(max_length=255, null=True)
+    reason_code_3 = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.id
 
-    def assign_pred(self, label, prob, reason_code_1, reason_code_2, reason_code_3):
-        try:
-            Prediction.objects.all().filter(customer=self, label=label).delete()
-            pred = Prediction(label=label, prob=prob, reason_code_1=reason_code_1, reason_code_2=reason_code_2, reason_code_3=reason_code_3)
-            pred.save()
-            self.prediction.add(pred)
-            self.save()
-        except TypeError as exp:
-            return exp.message
-        return None
+
+class Customer2(models.Model):
+    id = models.IntegerField(primary_key=True)
+    segment = models.CharField(max_length=4, null=True)
+    age = models.IntegerField(null=True)
+    gender = models.CharField(max_length=1, null=True)
+    yrs_w_club = models.IntegerField(null=True)
+    is_member = models.NullBooleanField(default=None)
+    is_hrs_owner = models.NullBooleanField(default=None)
+    major_channel = models.CharField(max_length=8, null=True)
+    mtg_num = models.IntegerField(null=True)
+    inv = models.FloatField(null=True)
+    div = models.FloatField(null=True)
+    rr = models.FloatField(null=True)
+    regular_prop = models.FloatField()
+    reason_code_1 = models.CharField(max_length=255, null=True)
+    reason_code_2 = models.CharField(max_length=255, null=True)
+    reason_code_3 = models.CharField(max_length=255, null=True)
+
+    def __str__(self):
+        return self.id
 
 
 class Configuration(models.Model):
@@ -65,8 +67,12 @@ class Configuration(models.Model):
 
 
 class Account(models.Model):
-    auth = models.OneToOneField(User)
-    conf = models.OneToOneField(Configuration)
+    user = models.ForeignKey(User)
+    conf = models.ForeignKey(Configuration)
 
     def __str__(self):
         return self.id
+
+    def auth(self, password):
+        user = authenticate(username=self.user.username, password=password)
+        return user is not None and user.is_active
