@@ -2,15 +2,10 @@ from collections import Counter
 import csv
 
 from rest_framework import viewsets, status
-
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -191,44 +186,44 @@ def add_cust_from_csv(request):
                 try:
                     if model == 1:
                         cust = Customer1(id=int(row["CUST_ID"]))
-                        if "SEGMENT" in row.keys(): cust.segment = row["SEGMENT"]
-                        if "AGE" in row.keys(): cust.age = int(row["AGE"])
-                        if "GENDER" in row.keys(): cust.gender = row["GENDER"]
-                        if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
-                        if "IS_MEMBER" in row.keys(): cust.is_member = int(row["IS_MEMBER"]) > 0
-                        if "IS_HRS_OWNER" in row.keys(): cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
-                        if "MAJOR_CHANNEL" in row.keys(): cust.major_channel = row["MAJOR_CHANNEL"]
-                        if "MTG_NUM" in row.keys(): cust.mtg_num = int(row["MTG_NUM"])
-                        if "INV" in row.keys(): cust.inv = float(row["INV"])
-                        if "DIV" in row.keys(): cust.div = float(row["DIV"])
-                        if "RR" in row.keys(): cust.rr = float(row["RR"])
-                        if "END_BAL" in row.keys(): cust.end_bal = float(row["END_BAL"])
-                        if "RECHARGE_TIMES" in row.keys(): cust.recharge_times = int(row["RECHARGE_TIMES"])
-                        if "RECHARGE_AMOUNT" in row.keys(): cust.recharge_amount = float(row["RECHARGE_AMOUNT"])
-                        if "WITHDRAW_TIMES" in row.keys(): cust.withdraw_times = int(row["WITHDRAW_TIMES"])
-                        if "WITHDRAW_AMOUNT" in row.keys(): cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
-                        if "GROW_PROPENSITY" in row.keys(): cust.grow_prop = float(row["GROW_PROPENSITY"])
-                        if "DECLINE_PROPENSITY" in row.keys(): cust.decline_prop = float(row["DECLINE_PROPENSITY"])
-                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = row["REASON_CODE_1"]
-                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = row["REASON_CODE_2"]
-                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = row["REASON_CODE_3"]
+                        cust.segment = row["SEGMENT"]
+                        cust.age = int(row["AGE"])
+                        cust.gender = row["GENDER"]
+                        cust.yrs_w_club = int(row["YRS_W_CLUB"])
+                        cust.is_member = int(row["IS_MEMBER"]) > 0
+                        cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
+                        cust.major_channel = row["MAJOR_CHANNEL"]
+                        cust.mtg_num = int(row["MTG_NUM"])
+                        cust.inv = float(row["INV"])
+                        cust.div = float(row["DIV"])
+                        cust.rr = float(row["RR"])
+                        cust.end_bal = float(row["END_BAL"])
+                        cust.recharge_times = int(row["RECHARGE_TIMES"])
+                        cust.recharge_amount = float(row["RECHARGE_AMOUNT"])
+                        cust.withdraw_times = int(row["WITHDRAW_TIMES"])
+                        cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
+                        cust.grow_prop = float(row["GROW_PROPENSITY"])
+                        cust.decline_prop = float(row["DECLINE_PROPENSITY"])
+                        cust.reason_code_1 = row["REASON_CODE_1"]
+                        cust.reason_code_2 = row["REASON_CODE_2"]
+                        cust.reason_code_3 = row["REASON_CODE_3"]
                     elif model == 2:
                         cust = Customer2(id=int(row["CUST_ID"]))
-                        if "SEGMENT" in row.keys(): cust.segment = row["SEGMENT"]
-                        if "AGE" in row.keys(): cust.age = int(row["AGE"])
-                        if "GENDER" in row.keys(): cust.gender = row["GENDER"]
-                        if "YRS_W_CLUB" in row.keys(): cust.yrs_w_club = int(row["YRS_W_CLUB"])
-                        if "IS_MEMBER" in row.keys(): cust.is_member = int(row["IS_MEMBER"]) > 0
-                        if "IS_HRS_OWNER" in row.keys(): cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
-                        if "MAJOR_CHANNEL" in row.keys(): cust.major_channel = row["MAJOR_CHANNEL"]
-                        if "MTG_NUM" in row.keys(): cust.mtg_num = int(row["MTG_NUM"])
-                        if "INV" in row.keys(): cust.inv = float(row["INV"])
-                        if "DIV" in row.keys(): cust.div = float(row["DIV"])
-                        if "RR" in row.keys(): cust.rr = float(row["RR"])
-                        if "REGULAR_PROPENSITY" in row.keys(): cust.regular_prop = float(row["REGULAR_PROPENSITY"])
-                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = row["REASON_CODE_1"]
-                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = row["REASON_CODE_2"]
-                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = row["REASON_CODE_3"]
+                        cust.segment = row["SEGMENT"]
+                        cust.age = int(row["AGE"])
+                        cust.gender = row["GENDER"]
+                        cust.yrs_w_club = int(row["YRS_W_CLUB"])
+                        cust.is_member = int(row["IS_MEMBER"]) > 0
+                        cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
+                        cust.major_channel = row["MAJOR_CHANNEL"]
+                        cust.mtg_num = int(row["MTG_NUM"])
+                        cust.inv = float(row["INV"])
+                        cust.div = float(row["DIV"])
+                        cust.rr = float(row["RR"])
+                        cust.regular_prop = float(row["REGULAR_PROPENSITY"])
+                        cust.reason_code_1 = row["REASON_CODE_1"]
+                        cust.reason_code_2 = row["REASON_CODE_2"]
+                        cust.reason_code_3 = row["REASON_CODE_3"]
                     else:
                         return Response(status=status.HTTP_400_BAD_REQUEST)
                     cust.save()
