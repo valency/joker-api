@@ -209,9 +209,9 @@ def add_cust_from_csv(request):
                         if "WITHDRAW_AMOUNT" in row.keys(): cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
                         if "GROW_PROPENSITY" in row.keys(): cust.grow_prop = float(row["GROW_PROPENSITY"])
                         if "DECLINE_PROPENSITY" in row.keys(): cust.decline_prop = float(row["DECLINE_PROPENSITY"])
-                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = float(row["REASON_CODE_1"])
-                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = float(row["REASON_CODE_2"])
-                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = float(row["REASON_CODE_3"])
+                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = row["REASON_CODE_1"]
+                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = row["REASON_CODE_2"]
+                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = row["REASON_CODE_3"]
                     elif model == 2:
                         cust = Customer2(id=int(row["CUST_ID"]))
                         if "SEGMENT" in row.keys(): cust.segment = row["SEGMENT"]
@@ -226,9 +226,9 @@ def add_cust_from_csv(request):
                         if "DIV" in row.keys(): cust.div = float(row["DIV"])
                         if "RR" in row.keys(): cust.rr = float(row["RR"])
                         if "REGULAR_PROPENSITY" in row.keys(): cust.regular_prop = float(row["REGULAR_PROPENSITY"])
-                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = float(row["REASON_CODE_1"])
-                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = float(row["REASON_CODE_2"])
-                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = float(row["REASON_CODE_3"])
+                        if "REASON_CODE_1" in row.keys(): cust.reason_code_1 = row["REASON_CODE_1"]
+                        if "REASON_CODE_2" in row.keys(): cust.reason_code_2 = row["REASON_CODE_2"]
+                        if "REASON_CODE_3" in row.keys(): cust.reason_code_3 = row["REASON_CODE_3"]
                     else:
                         return Response(status=status.HTTP_400_BAD_REQUEST)
                     cust.save()
