@@ -67,8 +67,8 @@ class Configuration(models.Model):
 
 
 class Account(models.Model):
-    user = models.ForeignKey(User)
-    conf = models.ForeignKey(Configuration)
+    user = models.OneToOneField(User)
+    conf = models.OneToOneField(Configuration)
 
     def __str__(self):
         return self.id
