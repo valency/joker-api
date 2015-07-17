@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -152,7 +153,8 @@ def get_cust_all(request):
                 response['Content-Disposition'] = 'attachment; filename="cust_export.xlsx"'
                 workbook = xlsxwriter.Workbook(response)
                 worksheet = workbook.add_worksheet()
-                worksheet.write_row(data_set[0].keys())
+                # worksheet._write_header_footer()
+                # worksheet.write_row(data_set[0].keys())
                 worksheet.writerows(data)
                 workbook.close()
                 return response
