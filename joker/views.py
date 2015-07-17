@@ -2,19 +2,15 @@ from collections import Counter
 import csv
 import StringIO
 
+import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.http import HttpResponse
-import xlsxwriter
 
 from mathematics import *
 from serializers import *
