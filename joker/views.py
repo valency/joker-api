@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -160,7 +161,7 @@ def get_cust_all(request):
                 output = StringIO.StringIO()
                 book = xlsxwriter.Workbook(output)
                 sheet = book.add_worksheet()
-                sheet.write(0, 0, 'Hello, world!')
+                sheet.writerows(data)
                 book.close()
                 # Construct response
                 output.seek(0)
