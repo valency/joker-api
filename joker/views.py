@@ -164,7 +164,7 @@ def get_cust_all(request):
                 book.close()
                 # Construct response
                 output.seek(0)
-                response = HttpResponse(output.read(), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 response['Content-Disposition'] = "attachment; filename=cust_export.xlsx"
                 return response
             else:
