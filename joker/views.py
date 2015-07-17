@@ -1,12 +1,12 @@
 from collections import Counter
 import csv
+import StringIO
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -149,14 +149,23 @@ def get_cust_all(request):
                     return Response(status=status.HTTP_400_BAD_REQUEST)
                 for cust_entity in data_set:
                     data.append(cust_entity)
-                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                response['Content-Disposition'] = 'attachment; filename="cust_export.xlsx"'
-                workbook = xlsxwriter.Workbook(response)
-                worksheet = workbook.add_worksheet()
-                # worksheet._write_header_footer()
-                # worksheet.write_row(data_set[0].keys())
-                worksheet.writerows(data)
-                workbook.close()
+                # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                # response['Content-Disposition'] = 'attachment; filename="cust_export.xlsx"'
+                # workbook = xlsxwriter.Workbook(response)
+                # worksheet = workbook.add_worksheet()
+                # # worksheet._write_header_footer()
+                # # worksheet.write_row(data_set[0].keys())
+                # worksheet.writerows(data)
+                # workbook.close()
+                output = StringIO.StringIO()
+                book = xlsxwriter.Workbook(output)
+                sheet = book.add_worksheet()
+                sheet.write('Hello', 'world!')
+                book.close()
+                # Construct response
+                output.seek(0)
+                response = HttpResponse(output.read(), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response['Content-Disposition'] = "attachment; filename=cust_export.xlsx"
                 return response
             else:
                 cust_page = Paginator(cust_set, size).page(page)
