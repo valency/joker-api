@@ -5,6 +5,7 @@ import StringIO
 import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -116,7 +117,7 @@ def get_cust_rank(request):
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         rank = list(cust_set.order_by("-" + request.GET["column"]).values_list(request.GET["column"], flat=True)).index(getattr(cust, request.GET["column"]))
-        return Response({"rank": rank})
+        return Response({"rank": rank, "total": cust_set.count()})
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
