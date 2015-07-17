@@ -4,9 +4,13 @@ import StringIO
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
+
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -99,6 +103,26 @@ def get_cust_by_id(request):
 
 
 @api_view(['GET'])
+def get_cust_rank(request):
+    if "id" in request.GET and "model" in request.GET and "column" in request.GET:
+        try:
+            model = int(request.GET["model"])
+            if model == 1:
+                cust_set = Customer1.objects
+            elif model == 2:
+                cust_set = Customer2.objects
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            cust = cust_set.get(id=int(request.GET["id"]))
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        rank = list(cust_set.values_list(request.GET["column"], flat=True)).index(cust[request.GET["column"]])
+        return Response({"rank": rank})
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
 def get_cust_all(request):
     if "draw" in request.GET and "start" in request.GET and "length" in request.GET and "model" in request.GET:
         try:
@@ -140,7 +164,6 @@ def get_cust_all(request):
                 writer.writerows(data)
                 return response
             elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
-                data = []
                 if model == 1:
                     data_set = Customer1Serializer(cust_set, many=True).data
                 elif model == 2:
