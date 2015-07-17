@@ -160,7 +160,7 @@ def get_cust_all(request):
                 output = StringIO.StringIO()
                 book = xlsxwriter.Workbook(output)
                 sheet = book.add_worksheet()
-                sheet.write('Hello', 'world!')
+                sheet.write(0, 0, 'Hello, world!')
                 book.close()
                 # Construct response
                 output.seek(0)
