@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -148,20 +147,15 @@ def get_cust_all(request):
                     data_set = Customer2Serializer(cust_set, many=True).data
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
-                for cust_entity in data_set:
-                    data.append(cust_entity)
-                # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                # response['Content-Disposition'] = 'attachment; filename="cust_export.xlsx"'
-                # workbook = xlsxwriter.Workbook(response)
-                # worksheet = workbook.add_worksheet()
-                # # worksheet._write_header_footer()
-                # # worksheet.write_row(data_set[0].keys())
-                # worksheet.writerows(data)
-                # workbook.close()
+                # Construct xlsx
                 output = StringIO.StringIO()
                 book = xlsxwriter.Workbook(output)
                 sheet = book.add_worksheet()
-                sheet.writerows(data)
+                sheet.write_row(0, 0, data_set[0].keys())
+                row_id = 0
+                for cust_entity in data_set:
+                    row_id += 1
+                    sheet.write_row(row_id, 0, cust_entity.values())
                 book.close()
                 # Construct response
                 output.seek(0)
