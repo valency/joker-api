@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count
 
 from django.http import HttpResponse
+import xlsxwriter
 
 from mathematics import *
 from serializers import *
@@ -136,6 +137,24 @@ def get_cust_all(request):
                 writer = csv.DictWriter(response, fieldnames=data_set[0].keys(), restval='')
                 writer.writeheader()
                 writer.writerows(data)
+                return response
+            elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
+                data = []
+                if model == 1:
+                    data_set = Customer1Serializer(cust_set, many=True).data
+                elif model == 2:
+                    data_set = Customer2Serializer(cust_set, many=True).data
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                for cust_entity in data_set:
+                    data.append(cust_entity)
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename="cust_export.xlsx"'
+                workbook = xlsxwriter.Workbook(response)
+                worksheet = workbook.add_worksheet()
+                worksheet.write_row(data_set[0].keys())
+                worksheet.writerows(data)
+                workbook.close()
                 return response
             else:
                 cust_page = Paginator(cust_set, size).page(page)
