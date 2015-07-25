@@ -72,15 +72,14 @@ class Mathematics:
         # Weight
         cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
-        k_means = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters))
-        # centres, xtoc, dist
+        kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters))
         # k_means = KMeans(init="k-means++", n_clusters=n_clusters)
         # k_means.fit(cust_matrix)
         result = []
         for i in range(0, len(id_list)):
             entity = {
                 "id": id_list[i],
-                "cluster": k_means.xtoc[i]
+                "cluster": kmeans_xtoc[i]
             }
             cust = cust_obj.get(id=id_list[i])
             for h in header:
