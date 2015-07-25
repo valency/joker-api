@@ -10,7 +10,7 @@ class Mathematics:
         pass
 
     @staticmethod
-    def joker_kmeans(header, weight, pred_label, n_clusters, n_records, model):
+    def joker_kmeans(header, pred_label, n_clusters, n_records, model):
         CATEGORICAL_COLUMNS = ["id", "segment", "age", "gender", "is_member", "is_hrs_owner", "major_channel"]
         if model == 1:
             cust_obj = Customer1.objects
@@ -24,7 +24,7 @@ class Mathematics:
         for h in header:
             # Choose header
             cust_column = numpy.array([getattr(cust, h) for cust in cust_set])
-            if h in CATEGORICAL_COLUMNS: cust_column = categorical(cust_column, drop=True).argmax(1)
+            if h in CATEGORICAL_COLUMNS: cust_column = categorical(cust_column, drop=True)
             # Stack to matrix
             if cust_matrix.size == 0:
                 cust_matrix = cust_column
@@ -33,7 +33,7 @@ class Mathematics:
         # Normalize
         cust_matrix = Common.scale_linear_by_column(cust_matrix)
         # Weight
-        cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
+        # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
         kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
         # Output

@@ -6,10 +6,15 @@ import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.paginator import Paginator
+
 from django.db.models import Count
+
 from django.http import HttpResponse
+
 from mathematics import *
 from serializers import *
 from common import *
@@ -309,8 +314,9 @@ def histogram(request):
 
 @api_view(['GET'])
 def kmeans(request):
-    if "header" in request.GET and "weight" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET and "model" in request.GET:
-        result = Mathematics.joker_kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"]), int(request.GET["model"]))
+    if "header" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET and "model" in request.GET:
+        # weight = [float(w) for w in request.GET["weight"].split(",")]
+        result = Mathematics.joker_kmeans(request.GET["header"].split(","), request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"]), int(request.GET["model"]))
         if result is not None:
             return Response(result)
         else:
