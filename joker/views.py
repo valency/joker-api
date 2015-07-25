@@ -310,7 +310,7 @@ def histogram(request):
 @api_view(['GET'])
 def kmeans(request):
     if "header" in request.GET and "weight" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET and "model" in request.GET:
-        result = Mathematics.kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"]), int(request.GET["model"]))
+        result = Mathematics.joker_kmeans(request.GET["header"].split(","), [float(w) for w in request.GET["weight"].split(",")], request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"]), int(request.GET["model"]))
         if result is not None:
             return Response(result)
         else:

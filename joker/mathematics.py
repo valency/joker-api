@@ -1,8 +1,8 @@
 from statsmodels.tools import categorical
-from sklearn.cluster import KMeans
 
 from models import *
 from common import *
+from kmeans import *
 
 
 class Mathematics:
@@ -10,7 +10,7 @@ class Mathematics:
         pass
 
     @staticmethod
-    def kmeans(header, weight, pred_label, n_clusters, n_records, model):
+    def joker_kmeans(header, weight, pred_label, n_clusters, n_records, model):
         if model == 1:
             cust_obj = Customer1.objects
         elif model == 2:
@@ -72,13 +72,15 @@ class Mathematics:
         # Weight
         cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
-        k_means = KMeans(init="k-means++", n_clusters=n_clusters)
-        k_means.fit(cust_matrix)
+        k_means = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters))
+        # centres, xtoc, dist
+        # k_means = KMeans(init="k-means++", n_clusters=n_clusters)
+        # k_means.fit(cust_matrix)
         result = []
         for i in range(0, len(id_list)):
             entity = {
                 "id": id_list[i],
-                "cluster": k_means.labels_[i]
+                "cluster": k_means.xtoc[i]
             }
             cust = cust_obj.get(id=id_list[i])
             for h in header:
