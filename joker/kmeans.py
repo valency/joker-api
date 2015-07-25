@@ -3,9 +3,12 @@
 # kmeanssample 2 pass, first sample sqrt(N)
 
 from __future__ import division
+import random
+import sys
+from time import time
+
 import numpy as np
 from scipy.spatial.distance import cdist  # $scipy/spatial/distance.py
-# http://docs.scipy.org/doc/scipy/reference/spatial.html
 from scipy.sparse import issparse  # $scipy/sparse/csr.py
 
 __date__ = "2011-11-17 Nov denis"
@@ -170,10 +173,6 @@ class Kmeans:
 
 # ...............................................................................
 if __name__ == "__main__":
-    import random
-    import sys
-    from time import time
-
     N = 10000
     dim = 10
     ncluster = 10
