@@ -72,7 +72,7 @@ class Mathematics:
         # Weight
         cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
-        kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters))
+        kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
         # k_means = KMeans(init="k-means++", n_clusters=n_clusters)
         # k_means.fit(cust_matrix)
         result = []
