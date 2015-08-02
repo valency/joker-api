@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^api/cust/kmeans/$', views.kmeans),
     url(r'^api/cust/dist/$', views.cust_dist),
     url(r'^api/cust/rank/$', views.get_cust_rank),
+    url(r'^api/cust/search/$', views.search_cust),
     url(r'^api/user/login/$', views.login),
     url(r'^api/user/register/$', views.register),
     url(r'^api/user/change_password/$', views.change_password),

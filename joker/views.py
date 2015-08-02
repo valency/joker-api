@@ -5,6 +5,7 @@ import StringIO
 import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -200,6 +201,63 @@ def get_cust_all(request):
                     "recordsFiltered": cust_set.count(),
                     "data": data
                 })
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def search_cust(request):
+    if "model" in request.GET and "length" in request.GET:
+        try:
+            model = int(request.GET["model"])
+            size = int(request.GET["length"])
+            # Handle model
+            if model == 1:
+                cust_set = Customer1.objects
+            elif model == 2:
+                cust_set = Customer2.objects
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            # Handle order
+            if "order" in request.GET:
+                cust_set = cust_set.order_by(request.GET["order"])
+            else:
+                cust_set = cust_set.all()
+            # Handle filter
+            if "filter" in request.GET and "filter_mode" in request.GET:
+                # Condition: field, in/range, value(:);
+                filter_mode = request.GET["filter_mode"]
+                condition = str(request.GET["filter"]).split(";")
+                filter_set = None
+                for c in condition:
+                    c_part = c.split(",")
+                    c_value = c_part[2]
+                    if ":" in c_value: c_value = c_value.split(":")
+                    condition_dict = {c_part[0] + "__" + c_part[1]: c_value}
+                    if filter_mode == "and":
+                        if filter_set is None:
+                            filter_set = cust_set.filter(**condition_dict)
+                        else:
+                            filter_set = filter_set.filter(**condition_dict)
+                    elif filter_mode == "or":
+                        if filter_set is None:
+                            filter_set = cust_set.filter(**condition_dict)
+                        else:
+                            filter_set = filter_set | cust_set.filter(**condition_dict)
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST)
+                cust_set = filter_set
+            # Export
+            cust_set = cust_set[:size]
+            if model == 1:
+                data = Customer1Serializer(cust_set, many=True).data
+            elif model == 2:
+                data = Customer2Serializer(cust_set, many=True).data
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(data)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
