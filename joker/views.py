@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -228,8 +229,7 @@ def search_cust(request):
                 filter_set = None
                 for c in str(request.GET["filter"]).split(";"):
                     c_part = c.split(",")
-                    c_value = c_part[2]
-                    if ":" in c_value: c_value = c_value.split(":")
+                    c_value = c_part[2].split(":")
                     condition = {c_part[0] + "__" + c_part[1]: c_value}
                     print condition
                     if filter_mode == "and":
