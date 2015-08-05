@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+
 from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
@@ -222,7 +223,7 @@ def search_cust(request):
             else:
                 cust_set = cust_set.all()
             # Handle filter
-            if "filter" in request.GET and "filter_mode" in request.GET:
+            if "filter" in request.GET and "filter_mode" in request.GET and request.GET["filter"] != "":
                 # Condition: field, in/range, value(:);
                 filter_mode = request.GET["filter_mode"]
                 filter_set = None
