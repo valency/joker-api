@@ -6,7 +6,9 @@ import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.paginator import Paginator
 
 from django.db.models import Count, Max, Min
@@ -275,8 +277,8 @@ def get_cust_field_range(request):
             field_max = cust_set.aggregate(Max(field))
             field_min = cust_set.aggregate(Min(field))
             return Response({
-                "max": field_max,
-                "min": field_min
+                "max": field_max[field + "__max"],
+                "min": field_min[field + "__min"]
             })
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -297,7 +299,8 @@ def get_cust_field_unique(request):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             unique = cust_set.values(field).distinct()
-            return Response(unique)
+            unique_array = [u[field] for u in unique]
+            return Response(unique_array)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
