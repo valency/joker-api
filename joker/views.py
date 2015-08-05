@@ -5,6 +5,7 @@ import StringIO
 import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -233,7 +234,6 @@ def search_cust(request):
                     c_part = c.split(",")
                     c_value = c_part[2].split(":")
                     condition = {c_part[0] + "__" + c_part[1]: c_value}
-                    print condition
                     if filter_mode == "and":
                         if filter_set is None:
                             filter_set = cust_set.filter(**condition)
