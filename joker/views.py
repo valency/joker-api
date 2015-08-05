@@ -5,13 +5,9 @@ import StringIO
 import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
@@ -234,18 +230,15 @@ def search_cust(request):
                     c_part = c.split(",")
                     c_value = c_part[2].split(":")
                     condition = {c_part[0] + "__" + c_part[1]: c_value}
-                    if filter_mode == "and":
-                        if filter_set is None:
-                            filter_set = cust_set.filter(**condition)
-                        else:
-                            filter_set = filter_set.filter(**condition)
-                    elif filter_mode == "or":
-                        if filter_set is None:
-                            filter_set = cust_set.filter(**condition)
-                        else:
-                            filter_set = filter_set | cust_set.filter(**condition)
+                    if filter_set is None:
+                        filter_set = cust_set.filter(**condition)
                     else:
-                        return Response(status=status.HTTP_400_BAD_REQUEST)
+                        if filter_mode == "and":
+                            filter_set = filter_set.filter(**condition)
+                        elif filter_mode == "or":
+                            filter_set = filter_set | cust_set.filter(**condition)
+                        else:
+                            return Response(status=status.HTTP_400_BAD_REQUEST)
                 cust_set = filter_set
             # Export
             cust_set = cust_set[:size]
