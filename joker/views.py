@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 
-from django.db.models import Count
+from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
 
@@ -254,6 +254,50 @@ def search_cust(request):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             return Response(data)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_cust_field_range(request):
+    if "model" in request.GET and "field" in request.GET:
+        try:
+            model = int(request.GET["model"])
+            field = request.GET["field"]
+            if model == 1:
+                cust_set = Customer1.objects.all()
+            elif model == 2:
+                cust_set = Customer2.objects.all()
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            field_max = cust_set.aggregate(Max(field))
+            field_min = cust_set.aggregate(Min(field))
+            return Response({
+                "max": field_max,
+                "min": field_min
+            })
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_cust_field_unique(request):
+    if "model" in request.GET and "field" in request.GET:
+        try:
+            model = int(request.GET["model"])
+            field = request.GET["field"]
+            if model == 1:
+                cust_set = Customer1.objects
+            elif model == 2:
+                cust_set = Customer2.objects
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            unique = cust_set.values(field).distinct()
+            return Response(unique)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
