@@ -225,15 +225,15 @@ def search_cust(request):
                 cust_set = cust_set.all()
             # Handle filter
             if "filter" in request.GET and "filter_mode" in request.GET and request.GET["filter"] != "":
-                # Condition: field, in/range, value(:);
+                # Condition: field, in/range, value(~):
                 filter_mode = request.GET["filter_mode"]
                 filter_set = None
                 print request.GET["filter"]
-                for c in str(request.GET["filter"]).split(";"):
+                for c in str(request.GET["filter"]).split(":"):
                     print c
                     print filter_set
                     c_part = c.split(",")
-                    c_value = c_part[2].split(":")
+                    c_value = c_part[2].split("~")
                     condition = {c_part[0] + "__" + c_part[1]: c_value}
                     if filter_set is None:
                         filter_set = cust_set.filter(**condition)
