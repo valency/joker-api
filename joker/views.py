@@ -5,6 +5,7 @@ import StringIO
 import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -229,9 +230,7 @@ def search_cust(request):
                 # Condition: field, in/range, value(~):
                 filter_mode = request.GET["filter_mode"]
                 filter_set = None
-                print request.GET["filter"]
                 for c in str(request.GET["filter"]).split(":"):
-                    print c
                     c_part = c.split(",")
                     c_value = c_part[2].split("~")
                     condition = {c_part[0] + "__" + c_part[1]: c_value}
@@ -241,9 +240,7 @@ def search_cust(request):
                         if filter_mode == "and":
                             filter_set = filter_set.filter(**condition)
                         elif filter_mode == "or":
-                            print "before: filter_set = ", filter_set.count(), "cust_set = ", cust_set.count()
                             filter_set = filter_set | cust_set.filter(**condition)
-                            print "after: filter_set = ", filter_set.count(), "cust_set = ", cust_set.count()
                         else:
                             return Response(status=status.HTTP_400_BAD_REQUEST)
                 cust_set = filter_set
