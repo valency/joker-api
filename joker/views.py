@@ -228,6 +228,7 @@ def search_cust(request):
                 # Condition: field, in/range, value(:);
                 filter_mode = request.GET["filter_mode"]
                 filter_set = None
+                print request.GET["filter"]
                 for c in str(request.GET["filter"]).split(";"):
                     print c
                     print filter_set
