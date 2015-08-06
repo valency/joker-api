@@ -237,7 +237,9 @@ def search_cust(request):
                         if filter_mode == "and":
                             filter_set = filter_set.filter(**condition)
                         elif filter_mode == "or":
+                            print "before: filter_set = ", filter_set.count(), "cust_set = ", cust_set.count()
                             filter_set = filter_set | cust_set.filter(**condition)
+                            print "after: filter_set = ", filter_set.count(), "cust_set = ", cust_set.count()
                         else:
                             return Response(status=status.HTTP_400_BAD_REQUEST)
                 cust_set = filter_set
