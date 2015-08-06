@@ -6,6 +6,7 @@ import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.core.paginator import Paginator
@@ -231,7 +232,6 @@ def search_cust(request):
                 print request.GET["filter"]
                 for c in str(request.GET["filter"]).split(":"):
                     print c
-                    print filter_set
                     c_part = c.split(",")
                     c_value = c_part[2].split("~")
                     condition = {c_part[0] + "__" + c_part[1]: c_value}
