@@ -153,15 +153,16 @@ def get_cust_all(request):
                     data_set = Customer2Serializer(cust_set, many=True).data
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
-                for cust_entity in data_set:
-                    data.append(cust_entity)
-                response = HttpResponse(content_type='text/csv')
-                response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                with open(Common.DATA_PATH + "cust_export.csv", 'w') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=data_set[0].keys(), restval='')
-                    writer.writeheader()
-                    writer.writerows(data)
-                return response
+                return Response(status=status.HTTP_200_OK)
+                # for cust_entity in data_set:
+                #     data.append(cust_entity)
+                # response = HttpResponse(content_type='text/csv')
+                # response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
+                # with open(Common.DATA_PATH + "cust_export.csv", 'w') as csvfile:
+                #     writer = csv.DictWriter(csvfile, fieldnames=data_set[0].keys(), restval='')
+                #     writer.writeheader()
+                #     writer.writerows(data)
+                # return response
             elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
                 if model == 1:
                     data_set = Customer1Serializer(cust_set, many=True).data
