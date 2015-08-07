@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+
 from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
@@ -147,10 +148,10 @@ def get_cust_all(request):
             if "csv" in request.GET and request.GET["csv"] == "true":
                 return render_to_csv_response(cust_set)
             elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
-                response = HttpResponse(mimetype='application/ms-excel')
-                response['Content-Disposition'] = 'attachment; filename=mymodel.xls'
+                response = HttpResponse(content_type='application/ms-excel')
+                response['Content-Disposition'] = 'attachment; filename=cust_export.xls'
                 wb = xlwt.Workbook(encoding='utf-8')
-                ws = wb.add_sheet("export")
+                ws = wb.add_sheet("cust_export")
                 row_num = 0
                 if model == 1:
                     columns = Customer1._meta.get_all_field_names()
