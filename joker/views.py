@@ -2,10 +2,12 @@ import csv
 import StringIO
 from collections import Counter
 from datetime import datetime
+import gzip
 
 import xlsxwriter
 from djqscsv import render_to_csv_response
 from rest_framework import viewsets, status
+
 from rest_framework.response import Response
 
 from rest_framework.decorators import api_view
@@ -436,6 +438,26 @@ def csv_to_json(request):
         return Response({
             "header": reader.fieldnames,
             "content": content
+        })
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def extract_gzip(request):
+    if "src" in request.GET:
+        src = Common.DATA_PATH + request.GET["src"]
+        dest = Common.DATA_PATH + request.GET["src"][:-3]
+        line_count = 0
+        with gzip.open(src, 'rb') as infile:
+            with open(dest, 'w') as outfile:
+                for line in infile:
+                    outfile.write(line)
+                    line_count += 1
+        return Response({
+            "src": src,
+            "dest": dest,
+            "lines": line_count
         })
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'^api/env/set/$', views.env_set),
     url(r'^api/env/get/$', views.env_get),
     url(r'^api/csv_to_json/$', views.csv_to_json),
+    url(r'^api/extract_gzip/$', views.extract_gzip),
 ]
