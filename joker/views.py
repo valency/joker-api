@@ -1,19 +1,15 @@
-from collections import Counter
 import csv
-
-import xlwt
+import StringIO
+import xlsxwriter
+from collections import Counter
+from djqscsv import render_to_csv_response
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-
 from django.db.models import Count, Max, Min
-
 from django.http import HttpResponse
-
-from djqscsv import render_to_csv_response
-
 from mathematics import *
 from serializers import *
 from common import *
@@ -148,68 +144,26 @@ def get_cust_all(request):
             if "csv" in request.GET and request.GET["csv"] == "true":
                 return render_to_csv_response(cust_set)
             elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
-                response = HttpResponse(content_type='application/ms-excel')
-                response['Content-Disposition'] = 'attachment; filename=cust_export.xls'
-                wb = xlwt.Workbook(encoding='utf-8')
-                ws = wb.add_sheet("cust_export")
-                row_num = 0
+                output = StringIO.StringIO()
+                book = xlsxwriter.Workbook(output)
+                sheet = book.add_worksheet()
                 if model == 1:
-                    columns = Customer1._meta.get_all_field_names()
+                    headers = Customer1._meta.get_all_field_names()
                 elif model == 2:
-                    columns = Customer2._meta.get_all_field_names()
+                    headers = Customer2._meta.get_all_field_names()
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
-                font_style = xlwt.XFStyle()
-                font_style.font.bold = True
-                for col_num in xrange(len(columns)):
-                    ws.write(row_num, col_num, columns[col_num][0], font_style)
-                    # ws.col(col_num).width = columns[col_num][1]
-                font_style = xlwt.XFStyle()
-                font_style.alignment.wrap = 1
-                for obj in cust_set:
-                    row_num += 1
-                    row = [getattr(obj, field) for field in columns]
-                    for col_num in xrange(len(row)):
-                        ws.write(row_num, col_num, row[col_num], font_style)
-                wb.save(response)
+                sheet.write_row(0, 0, headers)
+                row_id = 0
+                for row in cust_set:
+                    row_id += 1
+                    sheet.write_row(row_id, 0, [getattr(row, field) for field in headers])
+                book.close()
+                # Construct response
+                output.seek(0)
+                response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                response['Content-Disposition'] = "attachment; filename=cust_export.xlsx"
                 return response
-                # if model == 1:
-                #     workbook = queryset_to_workbook(cust_set, Customer1._meta.get_all_field_names())
-                # elif model == 2:
-                #     workbook = queryset_to_workbook(cust_set, Customer2._meta.get_all_field_names())
-                # else:
-                #     return Response(status=status.HTTP_400_BAD_REQUEST)
-                # response = HttpResponse(mimetype='application/vnd.ms-excel')
-                # response['Content-Disposition'] = 'attachment; filename="export.xls"'
-                # workbook.save(response)
-                # return response
-                # if model == 1:
-                #     data_set = Customer1Serializer(cust_set, many=True).data
-                # elif model == 2:
-                #     data_set = Customer2Serializer(cust_set, many=True).data
-                # else:
-                #     return Response(status=status.HTTP_400_BAD_REQUEST)
-                # Construct xlsx
-                # output = StringIO.StringIO()
-                # book = xlsxwriter.Workbook(output)
-                # sheet = book.add_worksheet()
-                # if model == 1:
-                #     headers = Customer1._meta.get_all_field_names()
-                # elif model == 2:
-                #     headers = Customer2._meta.get_all_field_names()
-                # else:
-                #     return Response(status=status.HTTP_400_BAD_REQUEST)
-                # sheet.write_row(0, 0, headers)
-                # row_id = 0
-                # for row in cust_set:
-                #     row_id += 1
-                #     sheet.write_row(row_id, 0, [getattr(row, field) for field in headers])
-                # book.close()
-                # # Construct response
-                # output.seek(0)
-                # response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                # response['Content-Disposition'] = "attachment; filename=cust_export.xlsx"
-                # return response
             else:
                 cust_page = Paginator(cust_set, size).page(page)
                 if model == 1:
