@@ -14,7 +14,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
-
+from djqscsv import render_to_csv_response
 from mathematics import *
 from serializers import *
 from common import *
@@ -147,21 +147,22 @@ def get_cust_all(request):
                 cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
             # Export
             if "csv" in request.GET and request.GET["csv"] == "true":
-                data = []
-                if model == 1:
-                    data_set = Customer1Serializer(cust_set, many=True).data
-                elif model == 2:
-                    data_set = Customer2Serializer(cust_set, many=True).data
-                else:
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                for cust_entity in data_set:
-                    data.append(cust_entity)
-                response = HttpResponse(content_type='text/csv')
-                response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                writer = csv.DictWriter(response, fieldnames=data_set[0].keys(), restval='')
-                writer.writeheader()
-                writer.writerows(data)
-                return response
+                return render_to_csv_response(cust_set)
+                # data = []
+                # if model == 1:
+                #     data_set = Customer1Serializer(cust_set, many=True).data
+                # elif model == 2:
+                #     data_set = Customer2Serializer(cust_set, many=True).data
+                # else:
+                #     return Response(status=status.HTTP_400_BAD_REQUEST)
+                # for cust_entity in data_set:
+                #     data.append(cust_entity)
+                # response = HttpResponse(content_type='text/csv')
+                # response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
+                # writer = csv.DictWriter(response, fieldnames=data_set[0].keys(), restval='')
+                # writer.writeheader()
+                # writer.writerows(data)
+                # return response
             elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
                 if model == 1:
                     data_set = Customer1Serializer(cust_set, many=True).data
