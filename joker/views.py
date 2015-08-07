@@ -1,7 +1,8 @@
 import csv
 import StringIO
-import xlsxwriter
 from collections import Counter
+
+import xlsxwriter
 from djqscsv import render_to_csv_response
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -9,7 +10,11 @@ from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
+
 from django.http import HttpResponse
+
+from django.contrib.auth import authenticate
+
 from mathematics import *
 from serializers import *
 from common import *
