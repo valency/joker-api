@@ -163,7 +163,7 @@ def get_cust_all(request):
                 font_style.font.bold = True
                 for col_num in xrange(len(columns)):
                     ws.write(row_num, col_num, columns[col_num][0], font_style)
-                    ws.col(col_num).width = columns[col_num][1]
+                    # ws.col(col_num).width = columns[col_num][1]
                 font_style = xlwt.XFStyle()
                 font_style.alignment.wrap = 1
                 for obj in cust_set:
