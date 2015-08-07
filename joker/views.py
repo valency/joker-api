@@ -5,9 +5,7 @@ import StringIO
 import xlsxwriter
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.core.paginator import Paginator
@@ -159,9 +157,10 @@ def get_cust_all(request):
                     data.append(cust_entity)
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="cust_export.csv"'
-                writer = csv.DictWriter(response, fieldnames=data_set[0].keys(), restval='')
-                writer.writeheader()
-                writer.writerows(data)
+                with open(Common.DATA_PATH + "cust_export.csv", 'w') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=data_set[0].keys(), restval='')
+                    writer.writeheader()
+                    writer.writerows(data)
                 return response
             elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
                 if model == 1:
