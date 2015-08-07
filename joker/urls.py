@@ -26,5 +26,7 @@ urlpatterns = [
     url(r'^api/user/login/$', views.login),
     url(r'^api/user/register/$', views.register),
     url(r'^api/user/change_password/$', views.change_password),
+    url(r'^api/env/set/$', views.env_set),
+    url(r'^api/env/get/$', views.env_get),
     url(r'^api/csv_to_json/$', views.csv_to_json),
 ]

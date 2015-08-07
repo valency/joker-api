@@ -29,3 +29,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
+
+
+class EnvironmentVariableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnviromentVariable

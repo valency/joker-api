@@ -1,14 +1,19 @@
 import csv
 import StringIO
 from collections import Counter
+from datetime import datetime
 
 import xlsxwriter
 from djqscsv import render_to_csv_response
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from rest_framework.decorators import api_view
+
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.core.paginator import Paginator
+
 from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
@@ -432,5 +437,29 @@ def csv_to_json(request):
             "header": reader.fieldnames,
             "content": content
         })
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def env_get(request):
+    if "key" in request.GET:
+        try:
+            return Response(EnvironmentVariableSerializer(EnviromentVariable.objects.get(key=request.GET["key"])).data)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def env_set(request):
+    if "key" in request.GET and "value" in request.GET:
+        try:
+            env_var = EnviromentVariable(key=request.GET["key"], value=request.GET["value"], last_update=datetime.now())
+            env_var.save()
+            return Response(EnvironmentVariableSerializer(env_var).data)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)

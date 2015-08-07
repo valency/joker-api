@@ -76,3 +76,12 @@ class Account(models.Model):
     def auth(self, password):
         user = authenticate(username=self.user.username, password=password)
         return user is not None and user.is_active
+
+
+class EnviromentVariable(models.Model):
+    key = models.CharField(max_length=32, primary_key=True)
+    value = models.CharField(max_length=255, null=True)
+    last_update = models.DateTimeField()
+
+    def __str__(self):
+        return self.id
