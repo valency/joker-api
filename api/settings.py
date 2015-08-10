@@ -20,6 +20,7 @@ INSTALLED_APPS = (
     'joker-model-1',
     'joker-model-2'
 )
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -30,7 +31,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
+
 ROOT_URLCONF = 'api.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -46,7 +49,9 @@ TEMPLATES = [
         },
     },
 ]
+
 WSGI_APPLICATION = 'api.wsgi.application'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [],
@@ -56,7 +61,9 @@ REST_FRAMEWORK = {
     ),
     'PAGE_SIZE': 10
 }
+
 CORS_ORIGIN_ALLOW_ALL = True
+
 CORS_ORIGIN_WHITELIST = ()
 
 # Database
