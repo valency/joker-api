@@ -1,9 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
 
 
-class Customer1(models.Model):
+class Customer(models.Model):
     id = models.IntegerField(primary_key=True)
     segment = models.CharField(max_length=4, null=True)
     age = models.IntegerField(null=True)
@@ -26,62 +24,6 @@ class Customer1(models.Model):
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
-
-    def __str__(self):
-        return self.id
-
-
-class Customer2(models.Model):
-    id = models.IntegerField(primary_key=True)
-    segment = models.CharField(max_length=4, null=True)
-    age = models.IntegerField(null=True)
-    gender = models.CharField(max_length=1, null=True)
-    yrs_w_club = models.IntegerField(null=True)
-    is_member = models.NullBooleanField(default=None)
-    is_hrs_owner = models.NullBooleanField(default=None)
-    major_channel = models.CharField(max_length=8, null=True)
-    mtg_num = models.IntegerField(null=True)
-    inv = models.FloatField(null=True)
-    div = models.FloatField(null=True)
-    rr = models.FloatField(null=True)
-    regular_prop = models.FloatField(null=True)
-    reason_code_1 = models.CharField(max_length=255, null=True)
-    reason_code_2 = models.CharField(max_length=255, null=True)
-    reason_code_3 = models.CharField(max_length=255, null=True)
-
-    def __str__(self):
-        return self.id
-
-
-class Configuration(models.Model):
-    export_mode = models.CharField(
-        max_length=16,
-        choices=(
-            ('csv', 'Comma-Separated Values'),
-            ('xlsx', 'Microsoft Excel Workbook')
-        ),
-        default='csv')
-
-    def __str__(self):
-        return self.id
-
-
-class Account(models.Model):
-    user = models.OneToOneField(User)
-    conf = models.OneToOneField(Configuration)
-
-    def __str__(self):
-        return self.id
-
-    def auth(self, password):
-        user = authenticate(username=self.user.username, password=password)
-        return user is not None and user.is_active
-
-
-class EnviromentVariable(models.Model):
-    key = models.CharField(max_length=32, primary_key=True)
-    value = models.CharField(max_length=255, null=True)
-    last_update = models.DateTimeField()
 
     def __str__(self):
         return self.id

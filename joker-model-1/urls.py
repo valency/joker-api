@@ -4,30 +4,19 @@ from rest_framework import routers
 import views
 
 router = routers.DefaultRouter()
-router.register(r'customer1', views.Customer1ViewSet)
-router.register(r'customer2', views.Customer2ViewSet)
-router.register(r'account', views.AccountViewSet)
-router.register(r'user', views.UserViewSet)
+router.register(r'customer', views.CustomerViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api/cust/get/$', views.get_cust_by_id),
-    url(r'^api/cust/get_all/$', views.get_cust_all),
-    url(r'^api/cust/add_cust_from_csv/$', views.add_cust_from_csv),
-    url(r'^api/cust/delete_all/$', views.remove_cust_all),
-    url(r'^api/cust/histogram/$', views.histogram),
-    url(r'^api/cust/kmeans/$', views.kmeans),
-    url(r'^api/cust/dist/$', views.cust_dist),
-    url(r'^api/cust/rank/$', views.get_cust_rank),
-    url(r'^api/cust/search/$', views.search_cust),
-    url(r'^api/cust/range/$', views.get_cust_field_range),
-    url(r'^api/cust/unique/$', views.get_cust_field_unique),
-    url(r'^api/user/login/$', views.login),
-    url(r'^api/user/register/$', views.register),
-    url(r'^api/user/change_password/$', views.change_password),
-    url(r'^api/env/set/$', views.env_set),
-    url(r'^api/env/get/$', views.env_get),
-    url(r'^api/csv_to_json/$', views.csv_to_json),
-    url(r'^api/extract_gzip/$', views.extract_gzip),
+    url(r'^joker/model/1/get/$', views.get_cust_by_id),
+    url(r'^joker/model/1/get_all/$', views.get_cust_all),
+    url(r'^joker/model/1/add_cust_from_csv/$', views.add_cust_from_csv),
+    url(r'^joker/model/1/delete_all/$', views.remove_cust_all),
+    url(r'^joker/model/1/histogram/$', views.histogram),
+    url(r'^joker/model/1/kmeans/$', views.kmeans),
+    url(r'^joker/model/1/dist/$', views.cust_dist),
+    url(r'^joker/model/1/rank/$', views.get_cust_rank),
+    url(r'^joker/model/1/search/$', views.search_cust),
+    url(r'^joker/model/1/range/$', views.get_cust_field_range),
+    url(r'^joker/model/1/unique/$', views.get_cust_field_unique)
 ]
