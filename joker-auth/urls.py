@@ -8,8 +8,8 @@ router.register(r'account', views.AccountViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^joker-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^joker/auth/login/$', views.login),
-    url(r'^joker/auth/register/$', views.register),
-    url(r'^joker/auth/password/$', views.change_password)
+    url(r'^', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^login/$', views.login),
+    url(r'^register/$', views.register),
+    url(r'^password/$', views.change_password)
 ]
