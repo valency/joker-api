@@ -9,7 +9,8 @@ router.register(r'account', views.AccountViewSet)
 urlpatterns = [
     url(r'', include(router.urls)),
     url(r'', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'signin/$', views.login),
+    url(r'sign-in/$', views.login),
     url(r'register/$', views.register),
-    url(r'password/$', views.change_password)
+    url(r'password/$', views.change_password),
+    url(r'verify/$', views.verify)
 ]
