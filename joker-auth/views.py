@@ -1,11 +1,9 @@
 import uuid
-
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
-from django.views.decorators.csrf import csrf_exempt
 from serializers import *
 
 
@@ -14,7 +12,6 @@ class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = AccountSerializer
 
 
-@csrf_exempt
 @api_view(['POST'])
 def register(request):
     if "username" in request.POST and "password" in request.POST:
@@ -27,7 +24,6 @@ def register(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def change_password(request):
     if "id" in request.POST and "old" in request.POST and "new" in request.POST:
@@ -45,7 +41,6 @@ def change_password(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def login(request):
     if "username" in request.POST and "password" in request.POST:
