@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
 
+from models import *
 from serializers import *
 
 
@@ -46,7 +47,7 @@ def change_password(request):
 @api_view(['POST'])
 def login(request):
     if "username" in request.POST and "password" in request.POST:
-        user = authenticate(username=request.POST["username"], password=request.POST["password"])
+        user = User.objects.get(username=request.POST["username"], password=request.POST["password"])
         if user is not None and user.is_active:
             account = Account.objects.get(user=user)
             account.ticket = str(uuid.uuid4())
