@@ -16,10 +16,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'joker-auth',
-    'joker-model-1',
-    'joker-model-2',
-    'joker-tools'
+    'joker_auth',
+    'joker_model_1',
+    'joker_model_2',
+    'joker_tools'
 )
 
 MIDDLEWARE_CLASSES = (
