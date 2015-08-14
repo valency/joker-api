@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
-
+from django.views.decorators.csrf import csrf_exempt
 from serializers import *
 
 
