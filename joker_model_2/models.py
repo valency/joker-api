@@ -19,6 +19,7 @@ class Customer(models.Model):
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
+    source = models.CharField(max_length=255)
 
     def __str__(self):
         return self.id

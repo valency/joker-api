@@ -6,13 +6,9 @@ import xlsxwriter
 from djqscsv import render_to_csv_response
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
 from rest_framework.decorators import api_view
-
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.core.paginator import Paginator
-
 from django.db.models import Count, Max, Min
 
 from django.http import HttpResponse
@@ -218,6 +214,7 @@ def add_cust_from_csv(request):
                     cust.reason_code_1 = row["REASON_CODE_1"]
                     cust.reason_code_2 = row["REASON_CODE_2"]
                     cust.reason_code_3 = row["REASON_CODE_3"]
+                    cust.source = request.GET["src"]
                     cust.save()
                     count["success"] += 1
                 except TypeError:
