@@ -18,7 +18,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'joker-auth',
     'joker-model-1',
-    'joker-model-2'
+    'joker-model-2',
+    'joker-tools'
 )
 
 MIDDLEWARE_CLASSES = (
