@@ -14,6 +14,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     serializer_class = AccountSerializer
 
 
+@csrf_exempt
 @api_view(['POST'])
 def register(request):
     if "username" in request.POST and "password" in request.POST:
@@ -26,6 +27,7 @@ def register(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(['POST'])
 def change_password(request):
     if "id" in request.POST and "old" in request.POST and "new" in request.POST:
@@ -43,6 +45,7 @@ def change_password(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(['POST'])
 def login(request):
     if "username" in request.POST and "password" in request.POST:
