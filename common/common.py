@@ -72,11 +72,11 @@ class ModelTools:
                 if "order[0][column]" in request.GET:
                     order = "-" if "order[0][dir]" in request.GET and request.GET["order[0][dir]"] == "desc" else ""
                     keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]
-                    filename += "." + order + keyword
+                    filename += "_" + order + keyword.replace("_", "-")
                     cust_set = cust_set.order_by(order + keyword)
                 # Handle segment
                 if "segment" in request.GET and request.GET["segment"] != "":
-                    filename += ".seg-" + request.GET["segment"]
+                    filename += "_seg-" + request.GET["segment"]
                     cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
                 # Export
                 if "csv" in request.GET and request.GET["csv"] == "true":
