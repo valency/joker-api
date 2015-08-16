@@ -36,8 +36,8 @@ class ModelTools:
             raise ValueError("model can only choose from 1 or 2")
         else:
             self.model = model
-            self.Customer = importlib.import_module("joker_model_" + model + ".models.Customer")
-            self.CustomerSerializer = importlib.import_module("joker_model_" + model + ".serializers.CustomerSerializer")
+            self.Customer = importlib.import_module("joker_model_" + str(model) + ".models.Customer")
+            self.CustomerSerializer = importlib.import_module("joker_model_" + str(model) + ".serializers.CustomerSerializer")
 
     def get_cust_by_id(self, request):
         if "id" in request.GET and "source" in request.GET:
