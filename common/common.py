@@ -77,7 +77,7 @@ class ModelTools:
                     cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
                 # Export
                 if "csv" in request.GET and request.GET["csv"] == "true":
-                    return render_to_csv_response(cust_set)
+                    return render_to_csv_response(cust_set, filename=request.GET["source"])
                 elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
                     output = StringIO.StringIO()
                     book = xlsxwriter.Workbook(output)
@@ -92,7 +92,7 @@ class ModelTools:
                     # Construct response
                     output.seek(0)
                     response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                    response['Content-Disposition'] = "attachment; filename=cust_export.xlsx"
+                    response['Content-Disposition'] = "attachment; filename=" + request.GET["source"].replace(".csv", ".xlsx")
                     return response
                 else:
                     cust_page = Paginator(cust_set, size).page(page)
