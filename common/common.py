@@ -66,7 +66,7 @@ class ModelTools:
             try:
                 size = int(request.GET["length"])
                 page = int(request.GET["start"]) / size + 1
-                filename = request.GET["source"].replace(".csv", "")
+                filename = request.GET["source"].replace(".csv", "").replace("_", "-")
                 cust_set = self.Customer.objects.filter(source=request.GET["source"])
                 # Handle order
                 if "order[0][column]" in request.GET:
