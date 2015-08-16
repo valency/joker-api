@@ -177,9 +177,15 @@ class ModelTools:
         if "source" in request.GET:
             try:
                 self.Customer.objects.filter(source=request.GET["source"]).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return {
+                    "status": status.HTTP_204_NO_CONTENT,
+                    "data": ""
+                }
             except ObjectDoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return {
+                    "status": status.HTTP_404_NOT_FOUND,
+                    "data": ""
+                }
 
     def histogram(self, request):
         if "field" in request.GET and "categorical" in request.GET and "source" in request.GET:
