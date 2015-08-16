@@ -177,17 +177,9 @@ class ModelTools:
         if "source" in request.GET:
             try:
                 self.Customer.objects.filter(source=request.GET["source"]).delete()
-                return {
-                    "status": status.HTTP_204_NO_CONTENT,
-                    "data": ""
-                }
+                return Response(status=status.HTTP_204_NO_CONTENT)
             except ObjectDoesNotExist:
-                return {
-                    "status": status.HTTP_404_NOT_FOUND,
-                    "data": ""
-                }
-            except:
-                print "Unexpected error:", sys.exc_info()[0]
+                return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
