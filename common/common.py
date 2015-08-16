@@ -186,6 +186,10 @@ class ModelTools:
                     "status": status.HTTP_404_NOT_FOUND,
                     "data": ""
                 }
+            except:
+                print "Unexpected error:", sys.exc_info()[0]
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def histogram(self, request):
         if "field" in request.GET and "categorical" in request.GET and "source" in request.GET:
