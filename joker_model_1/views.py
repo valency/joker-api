@@ -47,7 +47,8 @@ def get_cust_field_unique(request):
 
 @api_view(['GET'])
 def remove_cust_all(request):
-    return Response(MT.remove_cust_all(request))
+    resp = MT.remove_cust_all(request)
+    return Response(status=resp.status, data=resp.data)
 
 
 @api_view(['GET'])
