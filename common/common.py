@@ -43,7 +43,7 @@ class ModelTools:
         if "id" in request.GET and "source" in request.GET:
             try:
                 cust_set = self.Customer.objects.filter(source=request.GET["source"])
-                return Response(self.CustomerSerializer(cust_set.get(id=int(request.GET["id"])).data))
+                return Response(self.CustomerSerializer(cust_set.get(id=int(request.GET["id"]))).data)
             except ObjectDoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
