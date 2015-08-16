@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 
 
 class Customer(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField()
+    source = models.CharField(max_length=255)
     segment = models.CharField(max_length=4, null=True)
     age = models.IntegerField(null=True)
     gender = models.CharField(max_length=1, null=True)
@@ -19,7 +20,9 @@ class Customer(models.Model):
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
-    source = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.id
+        return self.source + ":" + str(self.id)
+
+    class Meta:
+        unique_together = ('id', 'source')
