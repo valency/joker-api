@@ -66,18 +66,21 @@ class ModelTools:
             try:
                 size = int(request.GET["length"])
                 page = int(request.GET["start"]) / size + 1
+                filename = request.GET["source"].replace(".csv", "")
                 cust_set = self.Customer.objects.filter(source=request.GET["source"])
                 # Handle order
                 if "order[0][column]" in request.GET:
                     order = "-" if "order[0][dir]" in request.GET and request.GET["order[0][dir]"] == "desc" else ""
                     keyword = request.GET["columns[" + request.GET["order[0][column]"] + "][data]"]
+                    filename += "." + order + keyword
                     cust_set = cust_set.order_by(order + keyword)
                 # Handle segment
                 if "segment" in request.GET and request.GET["segment"] != "":
+                    filename += ".seg-" + request.GET["segment"]
                     cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
                 # Export
                 if "csv" in request.GET and request.GET["csv"] == "true":
-                    return render_to_csv_response(cust_set, filename=request.GET["source"])
+                    return render_to_csv_response(cust_set, filename=filename + ".csv")
                 elif "xlsx" in request.GET and request.GET["xlsx"] == "true":
                     output = StringIO.StringIO()
                     book = xlsxwriter.Workbook(output)
@@ -92,7 +95,7 @@ class ModelTools:
                     # Construct response
                     output.seek(0)
                     response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                    response['Content-Disposition'] = "attachment; filename=" + request.GET["source"].replace(".csv", ".xlsx")
+                    response['Content-Disposition'] = "attachment; filename=" + filename + ".xlsx"
                     return response
                 else:
                     cust_page = Paginator(cust_set, size).page(page)
