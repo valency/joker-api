@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'rank/$', views.get_cust_rank),
     url(r'search/$', views.search_cust),
     url(r'range/$', views.get_cust_field_range),
-    url(r'unique/$', views.get_cust_field_unique)
+    url(r'unique/$', views.get_cust_field_unique),
+    url(r'source/$', views.get_cust_sources)
 ]
