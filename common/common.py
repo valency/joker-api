@@ -173,6 +173,14 @@ class ModelTools:
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def get_cust_sources(self, request):
+        try:
+            unique = self.Customer.objects.all().values("source").distinct()
+            unique_array = [u["source"] for u in unique]
+            return Response(unique_array)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
     def remove_cust_all(self, request):
         if "source" in request.GET:
             try:
