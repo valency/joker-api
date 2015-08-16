@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Customer(models.Model):
+    dbpk = models.IntegerField(primary_key=True)
     id = models.IntegerField()
     source = models.CharField(max_length=255)
     segment = models.CharField(max_length=4, null=True)
