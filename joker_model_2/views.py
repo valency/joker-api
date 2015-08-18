@@ -31,11 +31,6 @@ def get_cust_all(request):
 
 
 @api_view(['GET'])
-def search_cust(request):
-    return MT.search_cust(request)
-
-
-@api_view(['GET'])
 def get_cust_field_range(request):
     return MT.get_cust_field_range(request)
 
@@ -58,11 +53,6 @@ def remove_cust_all(request):
 @api_view(['GET'])
 def histogram(request):
     return MT.histogram(request)
-
-
-@api_view(['GET'])
-def kmeans(request):
-    return MT.kmeans(request)
 
 
 @api_view(['GET'])

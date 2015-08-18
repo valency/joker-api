@@ -1,6 +1,8 @@
 import csv
+import uuid
 
 from rest_framework import viewsets
+
 from rest_framework.decorators import api_view
 
 from serializers import *
@@ -10,6 +12,11 @@ from common.common import *
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+class CustomerSetViewSet(viewsets.ModelViewSet):
+    queryset = CustomerSet.objects.all()
+    serializer_class = CustomerSetSerializer
 
 
 MT = ModelTools(model=1)
@@ -28,11 +35,6 @@ def get_cust_rank(request):
 @api_view(['GET'])
 def get_cust_all(request):
     return MT.get_cust_all(request)
-
-
-@api_view(['GET'])
-def search_cust(request):
-    return MT.search_cust(request)
 
 
 @api_view(['GET'])
@@ -115,5 +117,62 @@ def add_cust_from_csv(request):
         except IOError:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(count)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_set(request):
+    if "id" in request.GET:
+        try:
+            return Response(CustomerSetSerializer(CustomerSet.objects.get(id=request.GET["id"])).data)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def create_set(request):
+    if "length" in request.GET and "source" in request.GET:
+        try:
+            size = int(request.GET["length"])
+            cust_set = Customer.objects.filter(source=request.GET["source"])
+            # Handle order
+            if "order" in request.GET:
+                cust_set = cust_set.order_by(request.GET["order"])
+            # Handle filter
+            if "filter" in request.GET and "filter_mode" in request.GET and request.GET["filter"] != "":
+                # Condition: field, in/range, value(~):
+                filter_mode = request.GET["filter_mode"]
+                filter_set = None
+                for c in str(request.GET["filter"]).split(":"):
+                    c_part = c.split(",")
+                    c_value = c_part[2].split("~")
+                    condition = {c_part[0] + "__" + c_part[1]: c_value}
+                    if filter_set is None:
+                        filter_set = cust_set.filter(**condition)
+                    else:
+                        if filter_mode == "and":
+                            filter_set = filter_set.filter(**condition)
+                        elif filter_mode == "or":
+                            filter_set = filter_set | cust_set.filter(**condition)
+                        else:
+                            return Response(status=status.HTTP_400_BAD_REQUEST)
+                cust_set = filter_set
+            # Handle size
+            cust_set = cust_set[:size]
+            # Save customer set
+            dbset_id = str(uuid.uuid4())
+            for cust in cust_set:
+                dbset = CustomerSet(id=dbset_id, cust_id=cust.id)
+                dbset.save()
+            # Export
+            return Response({
+                "id": dbset_id,
+                "cust": CustomerSerializer(cust_set, many=True).data
+            })
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -5,6 +5,7 @@ import views
 
 router = routers.DefaultRouter()
 router.register(r'customer', views.CustomerViewSet)
+router.register(r'customer_set', views.CustomerSetViewSet)
 
 urlpatterns = [
     url(r'', include(router.urls)),
@@ -16,8 +17,9 @@ urlpatterns = [
     url(r'kmeans/$', views.kmeans),
     url(r'dist/$', views.cust_dist),
     url(r'rank/$', views.get_cust_rank),
-    url(r'search/$', views.search_cust),
     url(r'range/$', views.get_cust_field_range),
     url(r'unique/$', views.get_cust_field_unique),
-    url(r'source/$', views.get_cust_sources)
+    url(r'source/$', views.get_cust_sources),
+    url(r'set/create$', views.create_set),
+    url(r'set/get', views.get_set)
 ]

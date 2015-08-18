@@ -112,42 +112,6 @@ class ModelTools:
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def search_cust(self, request):
-        if "length" in request.GET and "source" in request.GET:
-            try:
-                size = int(request.GET["length"])
-                cust_set = self.Customer.objects.filter(source=request.GET["source"])
-                # Handle order
-                if "order" in request.GET:
-                    cust_set = cust_set.order_by(request.GET["order"])
-                # Handle filter
-                if "filter" in request.GET and "filter_mode" in request.GET and request.GET["filter"] != "":
-                    # Condition: field, in/range, value(~):
-                    filter_mode = request.GET["filter_mode"]
-                    filter_set = None
-                    for c in str(request.GET["filter"]).split(":"):
-                        c_part = c.split(",")
-                        c_value = c_part[2].split("~")
-                        condition = {c_part[0] + "__" + c_part[1]: c_value}
-                        if filter_set is None:
-                            filter_set = cust_set.filter(**condition)
-                        else:
-                            if filter_mode == "and":
-                                filter_set = filter_set.filter(**condition)
-                            elif filter_mode == "or":
-                                filter_set = filter_set | cust_set.filter(**condition)
-                            else:
-                                return Response(status=status.HTTP_400_BAD_REQUEST)
-                    cust_set = filter_set
-                # Export
-                cust_set = cust_set[:size]
-                data = self.CustomerSerializer(cust_set, many=True).data
-                return Response(data)
-            except ObjectDoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
     def get_cust_field_range(self, request):
         if "field" in request.GET and "source" in request.GET:
             try:

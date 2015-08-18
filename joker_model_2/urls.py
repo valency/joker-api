@@ -13,10 +13,8 @@ urlpatterns = [
     url(r'add_cust_from_csv/$', views.add_cust_from_csv),
     url(r'delete_all/$', views.remove_cust_all),
     url(r'histogram/$', views.histogram),
-    url(r'kmeans/$', views.kmeans),
     url(r'dist/$', views.cust_dist),
     url(r'rank/$', views.get_cust_rank),
-    url(r'search/$', views.search_cust),
     url(r'range/$', views.get_cust_field_range),
     url(r'unique/$', views.get_cust_field_unique),
     url(r'source/$', views.get_cust_sources)
