@@ -9,5 +9,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class CustomerSetSerializer(serializers.ModelSerializer):
+    cust = CustomerSerializer()
+
     class Meta:
         model = CustomerSet
