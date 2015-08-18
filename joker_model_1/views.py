@@ -123,7 +123,6 @@ def add_cust_from_csv(request):
 
 @api_view(['GET'])
 def get_set(request):
-    print request.GET
     if "id" in request.GET:
         try:
             return Response(CustomerSetSerializer(CustomerSet.objects.get(id=request.GET["id"])).data)
