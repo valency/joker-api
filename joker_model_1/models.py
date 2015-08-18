@@ -37,7 +37,7 @@ class Customer(models.Model):
 class CustomerSet(models.Model):
     dbpk = models.AutoField(primary_key=True)
     id = models.CharField(max_length=36)
-    cust_id = models.ForeignKey(Customer)
+    cust = models.ForeignKey(Customer)
 
     def __str__(self):
         return str(self.id) + ":" + str(self.cust_id)

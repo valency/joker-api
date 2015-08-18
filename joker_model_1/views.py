@@ -165,7 +165,7 @@ def create_set(request):
             # Save customer set
             dbset_id = str(uuid.uuid4())
             for cust in cust_set:
-                dbset = CustomerSet(id=dbset_id, cust_id=cust.id)
+                dbset = CustomerSet(id=dbset_id, cust=cust)
                 dbset.save()
             # Export
             return Response({
