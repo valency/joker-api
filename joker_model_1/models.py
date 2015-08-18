@@ -43,4 +43,4 @@ class CustomerSet(models.Model):
         return str(self.id) + ":" + str(self.cust_id)
 
     class Meta:
-        unique_together = ('id', 'cust_id')
+        unique_together = ('id', 'cust')
