@@ -125,7 +125,7 @@ def add_cust_from_csv(request):
 def get_set(request):
     if "id" in request.GET:
         try:
-            return Response(CustomerSetSerializer(CustomerSet.objects.filter(id=request.GET["id"])).data)
+            return Response(CustomerSetSerializer(CustomerSet.objects.filter(id=request.GET["id"]), many=True).data)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
