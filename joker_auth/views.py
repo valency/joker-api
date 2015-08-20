@@ -77,6 +77,5 @@ def verify(request):
 
 @api_view(['GET'])
 def trust(request):
-    now = datetime.datetime.now()
-    html = "<html><body style='margin:10px;'><p>Success!</p><p>You can close this page now.</p></body></html>" % now
+    html = "<html><body style='margin:10px;'><p>Success!</p><p>You can close this page now.</p></body></html>"
     return HttpResponse(html)
