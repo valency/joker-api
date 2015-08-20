@@ -5,6 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 
 from serializers import *
 
@@ -72,3 +73,10 @@ def verify(request):
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def trust(request):
+    now = datetime.datetime.now()
+    html = "<html><body style='margin:10px;'><p>Success!</p><p>You can close this page now.</p></body></html>" % now
+    return HttpResponse(html)

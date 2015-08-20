@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'sign-in/$', views.login),
     url(r'register/$', views.register),
     url(r'password/$', views.change_password),
-    url(r'verify/$', views.verify)
+    url(r'verify/$', views.verify),
+    url(r'trust/$', views.trust)
 ]
