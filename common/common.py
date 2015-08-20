@@ -30,6 +30,7 @@ class ModelTools:
     model = 0
     Customer = None
     CustomerSerializer = None
+    Model_1_CustomerSet = importlib.import_module("joker_model_1.models").CustomerSet
 
     def __init__(self, model):
         if model != 1 and model != 2:
@@ -177,48 +178,43 @@ class ModelTools:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def kmeans(self, request):
-        if "header" in request.GET and "pred_label" in request.GET and "n_clusters" in request.GET and "n_records" in request.GET and "source" in request.GET:
+        if "header" in request.GET and "n_clusters" in request.GET and "set_id" in request.GET:
             # weight = [float(w) for w in request.GET["weight"].split(",")]
-            result = self.perform_kmeans(request.GET["header"].split(","), request.GET["pred_label"], int(request.GET["n_clusters"]), int(request.GET["n_records"]), request.GET["source"])
-            if result is not None:
-                return Response(result)
-            else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            header = request.GET["header"].split(",")
+            n_clusters = int(request.GET["n_clusters"])
+            cust_set = self.Model_1_CustomerSet.objects.filter(id=request.GET["set_id"])
+            cust_matrix = numpy.array([])
+            dbpk_list = numpy.array([entity.cust.dbpk for entity in cust_set])
+            for h in header:
+                # Choose header
+                cust_column = numpy.array([getattr(entity.cust, h) for entity in cust_set])
+                if h in CATEGORICAL_COLUMNS:
+                    cust_column = categorical(cust_column, drop=True)
+                # Stack to matrix
+                if cust_matrix.size == 0:
+                    cust_matrix = cust_column
+                else:
+                    cust_matrix = numpy.column_stack((cust_matrix, cust_column))
+            # Normalize
+            cust_matrix = scale_linear_by_column(cust_matrix)
+            # Weight
+            # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
+            # Clustering
+            kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
+            # Output
+            result = []
+            for i in range(0, len(dbpk_list)):
+                cust = self.Customer.objects.get(dbpk=dbpk_list[i])
+                entity = {
+                    "id": cust.id,
+                    "cluster": kmeans_xtoc[i]
+                }
+                for h in header:
+                    entity[h] = cust.__dict__[h]
+                result.append(entity)
+            return Response(result)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def perform_kmeans(self, header, pred_label, n_clusters, n_records, source):
-        cust_set = self.Customer.objects.filter(source=source).order_by("-" + pred_label)[:n_records]
-        cust_matrix = numpy.array([])
-        id_list = numpy.array([cust.id for cust in cust_set])
-        for h in header:
-            # Choose header
-            cust_column = numpy.array([getattr(cust, h) for cust in cust_set])
-            if h in CATEGORICAL_COLUMNS:
-                cust_column = categorical(cust_column, drop=True)
-            # Stack to matrix
-            if cust_matrix.size == 0:
-                cust_matrix = cust_column
-            else:
-                cust_matrix = numpy.column_stack((cust_matrix, cust_column))
-        # Normalize
-        cust_matrix = scale_linear_by_column(cust_matrix)
-        # Weight
-        # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
-        # Clustering
-        kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
-        # Output
-        result = []
-        for i in range(0, len(id_list)):
-            entity = {
-                "id": id_list[i],
-                "cluster": kmeans_xtoc[i]
-            }
-            cust = self.Customer.objects.filter(source=source).get(id=id_list[i])
-            for h in header:
-                entity[h] = cust.__dict__[h]
-            result.append(entity)
-        return result
 
     def cust_dist(self, request):
         if "field" in request.GET and "source" in request.GET:
