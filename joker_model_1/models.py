@@ -23,9 +23,12 @@ class Customer(models.Model):
     withdraw_amount = models.FloatField(null=True)
     grow_prop = models.FloatField(null=True)
     decline_prop = models.FloatField(null=True)
-    reason_code_1 = models.CharField(max_length=255, null=True)
-    reason_code_2 = models.CharField(max_length=255, null=True)
-    reason_code_3 = models.CharField(max_length=255, null=True)
+    grow_reason_code_1 = models.CharField(max_length=255, null=True)
+    grow_reason_code_2 = models.CharField(max_length=255, null=True)
+    grow_reason_code_3 = models.CharField(max_length=255, null=True)
+    decline_reason_code_1 = models.CharField(max_length=255, null=True)
+    decline_reason_code_2 = models.CharField(max_length=255, null=True)
+    decline_reason_code_3 = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.source + ":" + str(self.id)

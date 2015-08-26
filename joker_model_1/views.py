@@ -105,9 +105,12 @@ def add_cust_from_csv(request):
                     cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
                     cust.grow_prop = float(row["GROW_PROPENSITY"])
                     cust.decline_prop = float(row["DECLINE_PROPENSITY"])
-                    cust.reason_code_1 = row["REASON_CODE_1"]
-                    cust.reason_code_2 = row["REASON_CODE_2"]
-                    cust.reason_code_3 = row["REASON_CODE_3"]
+                    cust.grow_reason_code_1 = row["GROW_REASON_CODE_1"]
+                    cust.grow_reason_code_2 = row["GROW_REASON_CODE_2"]
+                    cust.grow_reason_code_3 = row["GROW_REASON_CODE_3"]
+                    cust.decline_reason_code_1 = row["DECLINE_REASON_CODE_1"]
+                    cust.decline_reason_code_2 = row["DECLINE_REASON_CODE_2"]
+                    cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
                     cust.save()
                     count["success"] += 1
                 except TypeError:
