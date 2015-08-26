@@ -17,6 +17,7 @@ from kmeans import *
 
 DATA_PATH = "/var/www/html/joker/data/"
 CATEGORICAL_COLUMNS = ["id", "segment", "age", "gender", "is_member", "is_hrs_owner", "major_channel"]
+NODEL_INV_PART_COUNT = 83
 
 
 def scale_linear_by_column(rawpoints, high=1.0, low=0.0):
