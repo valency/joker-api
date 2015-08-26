@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from common.common import *
+
+CUST_INV_PART_COUNT = 83
 
 
 class Customer(models.Model):
@@ -31,7 +32,7 @@ class Customer(models.Model):
     decline_reason_code_1 = models.CharField(max_length=255, null=True)
     decline_reason_code_2 = models.CharField(max_length=255, null=True)
     decline_reason_code_3 = models.CharField(max_length=255, null=True)
-    inv_part = ArrayField(models.FloatField(blank=True), size=NODEL_INV_PART_COUNT)
+    inv_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_PART_COUNT)
 
     def __str__(self):
         return self.source + ":" + str(self.id)

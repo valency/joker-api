@@ -111,7 +111,7 @@ def add_cust_from_csv(request):
                     cust.decline_reason_code_1 = row["DECLINE_REASON_CODE_1"]
                     cust.decline_reason_code_2 = row["DECLINE_REASON_CODE_2"]
                     cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
-                    for i in range(0, NODEL_INV_PART_COUNT, 1):
+                    for i in range(0, CUST_INV_PART_COUNT, 1):
                         cust.inv_part.append(float(row["INV" + str(i + 1)]))
                     cust.save()
                     count["success"] += 1
