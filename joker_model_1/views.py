@@ -141,10 +141,7 @@ def get_set(request):
 
 @api_view(['GET'])
 def get_set_all(request):
-    cust_set_id_set = []
-    for cust_set in CustomerSet.objects.all():
-        cust_set_id_set.append(cust_set.id)
-    return Response(cust_set_id_set)
+    return Response([u["id"] for u in CustomerSet.objects.all().values("id").distinct()])
 
 
 @api_view(['GET'])
