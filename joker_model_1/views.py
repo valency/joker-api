@@ -139,7 +139,7 @@ def get_set(request):
 
 @api_view(['GET'])
 def get_set_all(request):
-    return Response([{"id": u["id"], "name": u["name"]} for u in CustomerSet.objects.all().values("id").distinct()])
+    return Response([{"id": u["id"], "name": CustomerSet.objects.filter(id=u["id"])[0].name} for u in CustomerSet.objects.all().values("id").distinct()])
 
 
 @api_view(['GET'])
