@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'unique/$', views.get_cust_field_unique),
     url(r'source/$', views.get_cust_sources),
     url(r'set/create/$', views.create_set),
-    url(r'set/search/$', views.get_set)
+    url(r'set/search/$', views.get_set),
+    url(r'set/retrieve_all_id/$', views.get_set_all)
 ]
