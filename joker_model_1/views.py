@@ -175,6 +175,8 @@ def create_set(request):
             # Save customer set
             dbset_id = str(uuid.uuid4())
             name = request.GET["name"]
+            if len(name) == 0 or name is None:
+                name = dbset_id
             for cust in cust_set:
                 dbset = CustomerSet(id=dbset_id, name=name, create_time=datetime.now(), cust=cust)
                 dbset.save()
