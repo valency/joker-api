@@ -1,10 +1,8 @@
 import csv
 import uuid
-
+from datetime import datetime
 from rest_framework import viewsets
-
 from rest_framework.decorators import api_view
-
 from serializers import *
 from common.common import *
 
@@ -141,12 +139,12 @@ def get_set(request):
 
 @api_view(['GET'])
 def get_set_all(request):
-    return Response([u["id"] for u in CustomerSet.objects.all().values("id").distinct()])
+    return Response([{"id": u["id"], "name": u["name"]} for u in CustomerSet.objects.all().values("id").distinct()])
 
 
 @api_view(['GET'])
 def create_set(request):
-    if "length" in request.GET and "source" in request.GET:
+    if "length" in request.GET and "source" in request.GET and "name" in request.GET:
         try:
             size = int(request.GET["length"])
             cust_set = Customer.objects.filter(source=request.GET["source"])
@@ -176,12 +174,14 @@ def create_set(request):
             cust_set = cust_set[:size]
             # Save customer set
             dbset_id = str(uuid.uuid4())
+            name = request.GET["name"]
             for cust in cust_set:
-                dbset = CustomerSet(id=dbset_id, cust=cust)
+                dbset = CustomerSet(id=dbset_id, name=name, create_time=datetime.now(), cust=cust)
                 dbset.save()
             # Export
             return Response({
                 "id": dbset_id,
+                "name": name,
                 "cust": CustomerSerializer(cust_set, many=True).data
             })
         except ObjectDoesNotExist:

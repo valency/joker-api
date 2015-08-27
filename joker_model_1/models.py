@@ -44,7 +44,11 @@ class Customer(models.Model):
 class CustomerSet(models.Model):
     dbpk = models.AutoField(primary_key=True)
     id = models.CharField(max_length=36)
+    name = models.CharField(max_length=255)
+    create_time = models.DateTimeField()
     cust = models.ForeignKey(Customer)
+    cluster_time = models.DateTimeField(null=True)
+    cluster_features = ArrayField(models.CharField(max_length=32), null=True)
     cluster = models.IntegerField(null=True)
 
     def __str__(self):
