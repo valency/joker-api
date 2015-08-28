@@ -141,16 +141,14 @@ def get_set(request):
             cust_set = CustomerSetSerializer(CustomerSet.objects.filter(id=request.GET["id"]), many=True).data
             for cust_set_entity in cust_set:
                 if resp["id"] is None:
-                    resp["id"] = cust_set_entity.id
-                    resp["name"] = cust_set_entity.name
-                    resp["create_time"] = cust_set_entity.create_time
-                    resp["cluster_time"] = cust_set_entity.cluster_time
-                    resp["cluster_features"] = cust_set_entity.cluster_features
-                cust = cust_set_entity.cust
-                cluster = cust_set_entity.cluster
+                    resp["id"] = cust_set_entity["id"]
+                    resp["name"] = cust_set_entity["name"]
+                    resp["create_time"] = cust_set_entity["create_time"]
+                    resp["cluster_time"] = cust_set_entity["cluster_time"]
+                    resp["cluster_features"] = cust_set_entity["cluster_features"]
                 resp["cust"].append({
-                    "cust": cust,
-                    "cluster": cluster
+                    "cust": cust_set_entity["cust"],
+                    "cluster": cust_set_entity["cluster"]
                 })
             return Response(resp)
         except ObjectDoesNotExist:
