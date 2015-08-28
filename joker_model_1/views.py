@@ -129,8 +129,30 @@ def add_cust_from_csv(request):
 @api_view(['GET'])
 def get_set(request):
     if "id" in request.GET:
+        resp = {
+            "id": None,
+            "name": None,
+            "create_time": None,
+            "cluster_time": None,
+            "cluster_features": None,
+            "cust": []
+        }
         try:
-            return Response(CustomerSetSerializer(CustomerSet.objects.filter(id=request.GET["id"]), many=True).data)
+            cust_set = CustomerSetSerializer(CustomerSet.objects.filter(id=request.GET["id"]), many=True).data
+            for cust_set_entity in cust_set:
+                if resp["id"] is None:
+                    resp["id"] = cust_set_entity.id
+                    resp["name"] = cust_set_entity.name
+                    resp["create_time"] = cust_set_entity.create_time
+                    resp["cluster_time"] = cust_set_entity.cluster_time
+                    resp["cluster_features"] = cust_set_entity.cluster_features
+                cust = cust_set_entity.cust
+                cluster = cust_set_entity.cluster
+                resp["cust"].append({
+                    "cust": cust,
+                    "cluster": cluster
+                })
+            return Response(resp)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
