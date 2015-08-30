@@ -175,6 +175,18 @@ def add_cust_from_csv(request):
 
 
 @api_view(['GET'])
+def delete_set(request):
+    if "id" in request.GET:
+        try:
+            CustomerSet.objects.filter(id=request.GET["id"]).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
 def get_set(request):
     if "id" in request.GET:
         resp = {
