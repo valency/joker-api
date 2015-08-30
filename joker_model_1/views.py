@@ -1,12 +1,14 @@
 import csv
 import uuid
-from statsmodels.tools import categorical
 from datetime import datetime
+
+from statsmodels.tools import categorical
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
+
 from serializers import *
 from common.common import *
-from common.kmeans import *
+import common.kmeans as joker_kmeans
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -91,7 +93,7 @@ def kmeans(request):
         # Weight
         # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
-        kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
+        kmeans_centres, kmeans_xtoc, kmeans_dist = joker_kmeans.kmeans(cust_matrix, joker_kmeans.randomsample(cust_matrix, n_clusters), metric="cosine")
         # Output
         result = []
         for i in range(0, len(dbpk_list)):

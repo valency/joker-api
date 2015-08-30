@@ -8,7 +8,7 @@ from scipy.spatial.distance import cdist
 from scipy.sparse import issparse
 
 
-def kmeans(X, centres, delta=.001, maxiter=10, metric="euclidean", p=2, verbose=1):
+def kmeans(X, centres, delta=.001, maxiter=10, metric="euclidean", p=2, verbose=0):
     if not issparse(X):
         X = np.asanyarray(X)  # ?
     centres = centres.todense() if issparse(centres) else centres.copy()
@@ -88,8 +88,7 @@ def nearestcentres(X, centres, metric="euclidean", p=2):
 
 
 def Lqmetric(x, y=None, q=.5):
-    return (np.abs(x - y) ** q).mean() if y is not None \
-        else (np.abs(x) ** q).mean()
+    return (np.abs(x - y) ** q).mean() if y is not None else (np.abs(x) ** q).mean()
 
 
 class Kmeans:
