@@ -206,6 +206,7 @@ def get_set(request):
                     resp["create_time"] = cust_set_entity["create_time"]
                     resp["cluster_time"] = cust_set_entity["cluster_time"]
                     resp["cluster_features"] = cust_set_entity["cluster_features"]
+                    resp["cluster_count"] = cust_set_entity["cluster_count"]
                 resp["cust"].append({
                     "cust": cust_set_entity["cust"],
                     "cluster": cust_set_entity["cluster"]
