@@ -11,9 +11,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse
-from statsmodels.tools import categorical
-
-from kmeans import *
 
 DATA_PATH = "/var/www/html/joker/data/"
 CATEGORICAL_COLUMNS = ["id", "segment", "age", "gender", "is_member", "is_hrs_owner", "major_channel"]
@@ -30,7 +27,6 @@ class ModelTools:
     model = 0
     Customer = None
     CustomerSerializer = None
-    Model_1_CustomerSet = importlib.import_module("joker_model_1.models").CustomerSet
 
     def __init__(self, model):
         if model != 1 and model != 2:
@@ -174,45 +170,6 @@ class ModelTools:
                 "hist": hist,
                 "bin_edges": bin_edges
             })
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def kmeans(self, request):
-        if "header" in request.GET and "n_clusters" in request.GET and "set_id" in request.GET:
-            # weight = [float(w) for w in request.GET["weight"].split(",")]
-            header = request.GET["header"].split(",")
-            n_clusters = int(request.GET["n_clusters"])
-            cust_set = self.Model_1_CustomerSet.objects.filter(id=request.GET["set_id"])
-            cust_matrix = numpy.array([])
-            dbpk_list = numpy.array([entity.cust.dbpk for entity in cust_set])
-            for h in header:
-                # Choose header
-                cust_column = numpy.array([getattr(entity.cust, h) for entity in cust_set])
-                if h in CATEGORICAL_COLUMNS:
-                    cust_column = categorical(cust_column, drop=True)
-                # Stack to matrix
-                if cust_matrix.size == 0:
-                    cust_matrix = cust_column
-                else:
-                    cust_matrix = numpy.column_stack((cust_matrix, cust_column))
-            # Normalize
-            cust_matrix = scale_linear_by_column(cust_matrix)
-            # Weight
-            # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
-            # Clustering
-            kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
-            # Output
-            result = []
-            for i in range(0, len(dbpk_list)):
-                cust = self.Customer.objects.get(dbpk=dbpk_list[i])
-                entity = {
-                    "id": cust.id,
-                    "cluster": kmeans_xtoc[i]
-                }
-                for h in header:
-                    entity[h] = cust.__dict__[h]
-                result.append(entity)
-            return Response(result)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

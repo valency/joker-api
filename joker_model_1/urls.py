@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'add_cust_from_csv/$', views.add_cust_from_csv),
     url(r'delete_all/$', views.remove_cust_all),
     url(r'histogram/$', views.histogram),
-    url(r'kmeans/$', views.kmeans),
     url(r'dist/$', views.cust_dist),
     url(r'rank/$', views.get_cust_rank),
     url(r'range/$', views.get_cust_field_range),
@@ -22,5 +21,6 @@ urlpatterns = [
     url(r'source/$', views.get_cust_sources),
     url(r'set/create/$', views.create_set),
     url(r'set/search/$', views.get_set),
-    url(r'set/retrieve_all_id/$', views.get_set_all)
+    url(r'set/retrieve_all_id/$', views.get_set_all),
+    url(r'set/kmeans/$', views.kmeans)
 ]

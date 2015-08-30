@@ -5,6 +5,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from serializers import *
 from common.common import *
+from statsmodels.tools import categorical
+from kmeans import *
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -61,13 +63,57 @@ def histogram(request):
 
 
 @api_view(['GET'])
-def kmeans(request):
-    return MT.kmeans(request)
+def cust_dist(request):
+    return MT.cust_dist(request)
 
 
 @api_view(['GET'])
-def cust_dist(request):
-    return MT.cust_dist(request)
+def kmeans(request):
+    if "header" in request.GET and "n_clusters" in request.GET and "set_id" in request.GET:
+        # weight = [float(w) for w in request.GET["weight"].split(",")]
+        header = request.GET["header"].split(",")
+        n_clusters = int(request.GET["n_clusters"])
+        cust_set = CustomerSet.objects.filter(id=request.GET["set_id"])
+        cust_matrix = numpy.array([])
+        dbpk_list = numpy.array([entity.cust.dbpk for entity in cust_set])
+        for h in header:
+            # Choose header
+            cust_column = numpy.array([getattr(entity.cust, h) for entity in cust_set])
+            if h in CATEGORICAL_COLUMNS:
+                cust_column = categorical(cust_column, drop=True)
+            # Stack to matrix
+            if cust_matrix.size == 0:
+                cust_matrix = cust_column
+            else:
+                cust_matrix = numpy.column_stack((cust_matrix, cust_column))
+        # Normalize
+        cust_matrix = scale_linear_by_column(cust_matrix)
+        # Weight
+        # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
+        # Clustering
+        kmeans_centres, kmeans_xtoc, kmeans_dist = kmeans(cust_matrix, randomsample(cust_matrix, n_clusters), metric="cosine")
+        # Output
+        result = []
+        for i in range(0, len(dbpk_list)):
+            # Update cust set configurations
+            cust = Customer.objects.get(dbpk=dbpk_list[i])
+            cust_set_entity = cust_set.get(cust=cust)
+            cust_set_entity.cluster_time = datetime.now()
+            cust_set_entity.cluster_features = ",".join(header)
+            cust_set_entity.cluster = kmeans_xtoc[i]
+            cust_set_entity.cluster_count = n_clusters
+            cust_set_entity.save()
+            # Construct response
+            entity = {
+                "id": cust.id,
+                "cluster": kmeans_xtoc[i]
+            }
+            for h in header:
+                entity[h] = cust.__dict__[h]
+            result.append(entity)
+        return Response(result)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
