@@ -219,6 +219,18 @@ def get_set(request):
 
 
 @api_view(['GET'])
+def get_set_csv(request):
+    if "id" in request.GET:
+        try:
+            cust_set = CustomerSet.objects.filter(id=request.GET["id"])
+            return render_to_csv_response(cust_set.values("cust"), filename=cust_set[0].name.replace(" ", "_") + ".csv")
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
 def get_set_all(request):
     return Response([{"id": u["id"], "name": CustomerSet.objects.filter(id=u["id"])[0].name} for u in CustomerSet.objects.all().values("id").distinct()])
 

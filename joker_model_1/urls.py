@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'set/create/$', views.create_set),
     url(r'set/remove/$', views.delete_set),
     url(r'set/search/$', views.get_set),
+    url(r'set/csv/$', views.get_set_csv),
     url(r'set/retrieve_all_id/$', views.get_set_all),
     url(r'set/kmeans/$', views.kmeans)
 ]
