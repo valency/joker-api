@@ -91,19 +91,6 @@ def Lqmetric(x, y=None, q=.5):
     return (np.abs(x - y) ** q).mean() if y is not None else (np.abs(x) ** q).mean()
 
 
-class Kmeans:
-    def __init__(self, X, k=0, centres=None, nsample=0, **kwargs):
-        self.X = X
-        if centres is None:
-            self.centres, self.Xtocentre, self.distances = kmeanssample(X, k=k, nsample=nsample, **kwargs)
-        else:
-            self.centres, self.Xtocentre, self.distances = kmeans(X, centres, **kwargs)
-
-    def __iter__(self):
-        for jc in range(len(self.centres)):
-            yield jc, (self.Xtocentre == jc)
-
-
 if __name__ == "__main__":
     N = 10000
     dim = 10
