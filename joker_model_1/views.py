@@ -223,7 +223,8 @@ def get_set_csv(request):
     if "id" in request.GET:
         try:
             cust_set = CustomerSet.objects.filter(id=request.GET["id"])
-            return render_to_csv_response(cust_set.values("cust"), filename=cust_set[0].name.replace(" ", "_") + ".csv")
+            custs = Customer.objects.filter(dbpk__in=cust_set.values_list('cust__dbpk', flat=True))
+            return render_to_csv_response(custs, filename=cust_set[0].name.replace(" ", "_") + ".csv")
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
