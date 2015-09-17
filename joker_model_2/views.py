@@ -75,7 +75,6 @@ def add_cust_from_csv(request):
                 count["processed"] += 1
                 try:
                     cust = Customer(id=int(row["CUST_ID"]), source=request.GET["src"])
-                    cust.source = request.GET["src"]
                     cust.segment = row["SEGMENT"]
                     cust.age = int(row["AGE"])
                     cust.gender = row["GENDER"]
@@ -87,10 +86,15 @@ def add_cust_from_csv(request):
                     cust.inv = float(row["INV"])
                     cust.div = float(row["DIV"])
                     cust.rr = float(row["RR"])
-                    cust.regular_prop = float(row["REGULAR_PROPENSITY"])
+                    cust.chance_to_be_regular = float(row["CHANCE_TO_BE_REGULAR"])
                     cust.reason_code_1 = row["REASON_CODE_1"]
                     cust.reason_code_2 = row["REASON_CODE_2"]
                     cust.reason_code_3 = row["REASON_CODE_3"]
+                    cust.reason_code_4 = row["REASON_CODE_4"]
+                    inv_part = []
+                    for i in range(0, CUST_INV_PART_COUNT, 1):
+                        inv_part.append(float(row["INV" + str(i + 1)]))
+                    cust.inv_part = inv_part
                     cust.save()
                     count["success"] += 1
                 except TypeError:

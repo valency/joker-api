@@ -154,9 +154,11 @@ def add_cust_from_csv(request):
                     cust.grow_reason_code_1 = row["GROW_REASON_CODE_1"]
                     cust.grow_reason_code_2 = row["GROW_REASON_CODE_2"]
                     cust.grow_reason_code_3 = row["GROW_REASON_CODE_3"]
+                    cust.grow_reason_code_4 = row["GROW_REASON_CODE_4"]
                     cust.decline_reason_code_1 = row["DECLINE_REASON_CODE_1"]
                     cust.decline_reason_code_2 = row["DECLINE_REASON_CODE_2"]
                     cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
+                    cust.decline_reason_code_4 = row["DECLINE_REASON_CODE_4"]
                     inv_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
                         inv_part.append(float(row["INV" + str(i + 1)]))

@@ -1,5 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
+
+CUST_INV_PART_COUNT = 83
 
 
 class Customer(models.Model):
@@ -17,10 +19,12 @@ class Customer(models.Model):
     inv = models.FloatField(null=True)
     div = models.FloatField(null=True)
     rr = models.FloatField(null=True)
-    regular_prop = models.FloatField(null=True)
+    chance_to_be_regular = models.FloatField(null=True)
     reason_code_1 = models.CharField(max_length=255, null=True)
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
+    reason_code_4 = models.CharField(max_length=255, null=True)
+    inv_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_PART_COUNT)
 
     def __str__(self):
         return self.source + ":" + str(self.id)

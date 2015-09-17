@@ -29,9 +29,11 @@ class Customer(models.Model):
     grow_reason_code_1 = models.CharField(max_length=255, null=True)
     grow_reason_code_2 = models.CharField(max_length=255, null=True)
     grow_reason_code_3 = models.CharField(max_length=255, null=True)
+    grow_reason_code_4 = models.CharField(max_length=255, null=True)
     decline_reason_code_1 = models.CharField(max_length=255, null=True)
     decline_reason_code_2 = models.CharField(max_length=255, null=True)
     decline_reason_code_3 = models.CharField(max_length=255, null=True)
+    decline_reason_code_4 = models.CharField(max_length=255, null=True)
     inv_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_PART_COUNT)
 
     def __str__(self):
