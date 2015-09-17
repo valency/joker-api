@@ -106,8 +106,7 @@ if __name__ == "__main__":
     np.random.seed(seed)
     random.seed(seed)
 
-    print "N %d  dim %d  ncluster %d  kmsample %d  metric %s" % (
-        N, dim, ncluster, kmsample, metric)
+    print "N %d  dim %d  ncluster %d  kmsample %d  metric %s" % (N, dim, ncluster, kmsample, metric)
     X = np.random.exponential(size=(N, dim))
 
     t0 = time()

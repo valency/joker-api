@@ -233,7 +233,8 @@ def get_set_csv(request):
 
 @api_view(['GET'])
 def get_set_all(request):
-    return Response([{"id": u["id"], "name": CustomerSet.objects.filter(id=u["id"])[0].name} for u in CustomerSet.objects.all().values("id").distinct()])
+    return Response([{"id": u["id"], "name": CustomerSet.objects.filter(id=u["id"])[0].name} for u in
+                     CustomerSet.objects.all().values("id").distinct()])
 
 
 @api_view(['GET'])
@@ -265,7 +266,8 @@ def create_set(request):
                             return Response(status=status.HTTP_400_BAD_REQUEST)
                 cust_set = filter_set
             # Handle size
-            cust_set = cust_set[:size]
+            if size > 0:
+                cust_set = cust_set[:size]
             # Save customer set
             dbset_id = str(uuid.uuid4())
             name = request.GET["name"]
