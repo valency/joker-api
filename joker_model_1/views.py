@@ -247,7 +247,9 @@ def create_set(request):
             cust_set = Customer.objects.filter(source=request.GET["source"])
             # Handle order
             if "order" in request.GET:
-                cust_set = cust_set.order_by(request.GET["order"])
+                order = request.GET["order"]
+                if order == "random": order = "?"
+                cust_set = cust_set.order_by(order)
             # Handle filter
             if "filter" in request.GET and "filter_mode" in request.GET and request.GET["filter"] != "":
                 # Condition: field, in/range, value(~):
