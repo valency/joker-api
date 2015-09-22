@@ -73,6 +73,10 @@ def cust_dist(request):
 def kmeans(request):
     if "header" in request.GET and "n_clusters" in request.GET and "set_id" in request.GET:
         # weight = [float(w) for w in request.GET["weight"].split(",")]
+        if "metric" in request.GET:
+            metric = request.GET["metric"]
+        else:
+            metric = "cosine"
         header = request.GET["header"].split(",")
         n_clusters = int(request.GET["n_clusters"])
         cust_set = CustomerSet.objects.filter(id=request.GET["set_id"])
@@ -93,7 +97,7 @@ def kmeans(request):
         # Weight
         # cust_matrix = numpy.nan_to_num(numpy.multiply(cust_matrix, numpy.array([numpy.array(weight)] * cust_set.count())))
         # Clustering
-        kmeans_centres, kmeans_xtoc, kmeans_dist = joker_kmeans.kmeans(cust_matrix, joker_kmeans.randomsample(cust_matrix, n_clusters), metric="cosine")
+        kmeans_centres, kmeans_xtoc, kmeans_dist = joker_kmeans.kmeans(cust_matrix, joker_kmeans.randomsample(cust_matrix, n_clusters), metric=metric)
         # Output
         result = []
         for i in range(0, len(dbpk_list)):
@@ -225,8 +229,11 @@ def get_set_csv(request):
     if "id" in request.GET:
         try:
             cust_set = CustomerSet.objects.filter(id=request.GET["id"])
-            custs = Customer.objects.filter(dbpk__in=cust_set.values_list('cust__dbpk', flat=True))
-            return render_to_csv_response(custs, filename=cust_set[0].name.replace(" ", "_") + ".csv")
+            field_list = Customer._meta.get_all_field_names()
+            field_list = ["cust__" + i for i in field_list]
+            field_list.append("cluster")
+            cust_output = cust_set.values(*field_list)
+            return render_to_csv_response(cust_output, filename=cust_set[0].name.replace(" ", "_") + ".csv")
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
@@ -235,8 +242,7 @@ def get_set_csv(request):
 
 @api_view(['GET'])
 def get_set_all(request):
-    return Response([{"id": u["id"], "name": CustomerSet.objects.filter(id=u["id"])[0].name} for u in
-                     CustomerSet.objects.all().values("id").distinct()])
+    return Response([{"id": u["id"], "name": CustomerSet.objects.filter(id=u["id"])[0].name} for u in CustomerSet.objects.all().values("id").distinct()])
 
 
 @api_view(['GET'])
