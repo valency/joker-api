@@ -95,6 +95,7 @@ def add_cust_from_csv(request):
                     for i in range(0, CUST_INV_PART_COUNT, 1):
                         inv_part.append(float(row["INV" + str(i + 1)]))
                     cust.inv_part = inv_part
+                    cust.active_rate_previous_83 = float(row["ACTIVE_RATE_PREVIOUS_83"])
                     cust.save()
                     count["success"] += 1
                 except TypeError:
