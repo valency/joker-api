@@ -104,10 +104,11 @@ def kmeans(request):
             # Update cust set configurations
             cust = Customer.objects.get(dbpk=dbpk_list[i])
             cust_set_entity = cust_set.get(cust=cust)
+            cust_set_entity.cluster = kmeans_xtoc[i]
             cust_set_entity.cluster_time = datetime.now()
             cust_set_entity.cluster_features = header
-            cust_set_entity.cluster = kmeans_xtoc[i]
             cust_set_entity.cluster_count = n_clusters
+            cust_set_entity.cluster_metric = metric
             cust_set_entity.save()
             # Construct response
             entity = {
@@ -197,10 +198,6 @@ def get_set(request):
     if "id" in request.GET:
         resp = {
             "id": None,
-            "name": None,
-            "create_time": None,
-            "cluster_time": None,
-            "cluster_features": None,
             "cust": []
         }
         try:
@@ -213,6 +210,7 @@ def get_set(request):
                     resp["cluster_time"] = cust_set_entity["cluster_time"]
                     resp["cluster_features"] = cust_set_entity["cluster_features"]
                     resp["cluster_count"] = cust_set_entity["cluster_count"]
+                    resp["cluster_metric"] = cust_set_entity["cluster_metric"]
                 resp["cust"].append({
                     "cust": cust_set_entity["cust"],
                     "cluster": cust_set_entity["cluster"]
