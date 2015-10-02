@@ -19,6 +19,7 @@ INSTALLED_APPS = (
     'joker_auth',
     'joker_model_1',
     'joker_model_2',
+    'joker_model_4',
     'joker_tools'
 )
 

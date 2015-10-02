@@ -29,8 +29,8 @@ class ModelTools:
     CustomerSerializer = None
 
     def __init__(self, model):
-        if model != 1 and model != 2:
-            raise ValueError("model can only choose from 1 or 2")
+        if model != 1 and model != 2 and model != 4:
+            raise ValueError("model can only choose from 1, 2 or 4")
         else:
             self.model = model
             self.Customer = importlib.import_module("joker_model_" + str(model) + ".models").Customer
