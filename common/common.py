@@ -75,6 +75,11 @@ class ModelTools:
                 if "segment" in request.GET and request.GET["segment"] != "":
                     filename += "_seg-" + request.GET["segment"]
                     cust_set = cust_set.filter(segment__in=str(request.GET["segment"]).split(","))
+                # Handle active_rate_prev_83
+                if "active_rate_prev_83" in request.GET and request.GET["active_rate_prev_83"] != "":
+                    filename += "_active_rate_prev_83-" + request.GET["active_rate_prev_83"]
+                    active_rate_prev_83_range = request.GET["active_rate_prev_83"].split(",")
+                    cust_set = cust_set.filter(active_rate_previous_83__range=(float(active_rate_prev_83_range[0]), float(active_rate_prev_83_range[1])))
                 # Export
                 if "csv" in request.GET and request.GET["csv"] == "true":
                     return render_to_csv_response(cust_set, filename=filename + ".csv")
