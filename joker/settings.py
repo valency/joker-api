@@ -74,9 +74,9 @@ CORS_ORIGIN_WHITELIST = ()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'template1',
-        'USER': 'postgres',
-        'PASSWORD': '33b5dadd-c299-4f1c-92ab-e18d02a5a2e2',
+        'NAME': 'smartcube',
+        'USER': 'smartcube',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
