@@ -91,11 +91,11 @@ def add_cust_from_csv(request):
                     cust.reason_code_2 = row["REASON_CODE_2"]
                     cust.reason_code_3 = row["REASON_CODE_3"]
                     cust.reason_code_4 = row["REASON_CODE_4"]
+                    cust.active_rate_previous_83 = float(row["ACTIVE_RATE_PREVIOUS_83"])
                     inv_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
                         inv_part.append(float(row["INV" + str(i + 1)]))
                     cust.inv_part = inv_part
-                    cust.active_rate_previous_83 = float(row["ACTIVE_RATE_PREVIOUS_83"])
                     cust.save()
                     count["success"] += 1
                 except TypeError:

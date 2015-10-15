@@ -35,6 +35,7 @@ class Customer(models.Model):
     decline_reason_code_3 = models.CharField(max_length=255, null=True)
     decline_reason_code_4 = models.CharField(max_length=255, null=True)
     inv_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_PART_COUNT)
+    recent_growth_rate = models.FloatField(null=True)
 
     def __str__(self):
         return self.source + ":" + str(self.id)
