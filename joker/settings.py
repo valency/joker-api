@@ -75,7 +75,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'smartcube',
-        'USER': 'admin',
+        'USER': 'smartcube',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
