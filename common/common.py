@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse
 
-DATA_PATH = "/var/www/html/joker/data/"
+DATA_PATH = "/home/smartcube/local/var/www/html/joker/data/"
 CATEGORICAL_COLUMNS = ["id", "segment", "age", "gender", "is_member", "is_hrs_owner", "major_channel"]
 
 
