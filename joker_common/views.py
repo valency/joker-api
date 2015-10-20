@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse
 
-DATA_PATH = "/home/smartcube/local/var/www/html/joker/data/"
+DATA_PATH = "/var/www/html/joker/data/"
 CATEGORICAL_COLUMNS = ["id", "segment", "age", "gender", "is_member", "is_hrs_owner", "major_channel"]
 
 
@@ -168,7 +168,10 @@ class ModelTools:
                 hist = numpy.divide(Counter(cust).values(), [float(len(cust))])
                 bin_edges = Counter(cust).keys()
             else:
-                hist, bin_edges = numpy.histogram(cust, 10)
+                bins = 10
+                if "bins" in request.GET:
+                    bins = numpy.fromstring(request.GET["bins"], dtype=float, sep=',')
+                hist, bin_edges = numpy.histogram(cust, bins)
                 hist = numpy.divide(hist, [float(len(cust))])
                 bin_edges = bin_edges.tolist()
             return Response({

@@ -1,14 +1,14 @@
 import csv
 import uuid
 from datetime import datetime
-
 from statsmodels.tools import categorical
+
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
 from serializers import *
-from common.common import *
-import common.kmeans as joker_kmeans
+from joker_common.views import *
+import joker_common.kmeans as joker_kmeans
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
