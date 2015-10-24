@@ -33,16 +33,19 @@ def register(request):
 def login(request):
     if "username" in request.POST and "password" in request.POST:
         try:
-            account = Account.objects.get(username=request.POST["username"], password=request.POST["password"])
-            account.ticket = str(uuid.uuid4())
-            account.last_login = datetime.now()
-            account.save()
-            return Response({
-                "id": account.id,
-                "ticket": account.ticket
-            })
+            account = Account.objects.get(username=request.POST["username"])
+            if account.password == request.POST["password"]:
+                account.ticket = str(uuid.uuid4())
+                account.last_login = datetime.now()
+                account.save()
+                return Response({
+                    "id": account.id,
+                    "ticket": account.ticket
+                })
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
         except ObjectDoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_404_NOT_FOUND)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
