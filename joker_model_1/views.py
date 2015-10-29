@@ -165,6 +165,18 @@ def add_cust_from_csv(request):
                     cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
                     cust.decline_reason_code_4 = row["DECLINE_REASON_CODE_4"]
                     cust.recent_growth_rate = float(row["RECENT_GROWTH_RATE"])
+                    cust.active_rate_previous_83 = float(row["RECENT_GROWTH_RATE"])
+                    cust.to_per_mtg = float(row["TO_PER_MTG"])
+                    cust.betline_per_mtg = float(row["BETLINE_PER_MTG"])
+                    cust.avg_bet_size = float(row["AVG_BET_SIZE"])
+                    cust.to_ytd_growth = float(row["TO_YTD_GROWTH"])
+                    cust.to_recent_growth = float(row["TO_RECENT_GROWTH"])
+                    cust.to_per_mtg_ytd_growth = float(row["TO_PER_MTG_YTD_GROWTH"])
+                    cust.to_per_mtg_recent_growth = float(row["TO_PER_MTG_RECENT_GROWTH"])
+                    cust.betline_per_mtg_ytd_growth = float(row["BETLINE_PER_MTG_YTD_GROWTH"])
+                    cust.betline_per_mtg_recent_growth = float(row["BETLINE_PER_MTG_RECENT_GROWTH"])
+                    cust.avg_bet_size_ytd_growth = float(row["AVG_BET_SIZE_YTD_GROWTH"])
+                    cust.avg_bet_size_recent_growth = float(row["AVG_BET_SIZE_RECENT_GROWTH"])
                     inv_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
                         inv_part.append(float(row["INV" + str(i + 1)]))
