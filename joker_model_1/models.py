@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 CUST_INV_PART_COUNT = 83
 
@@ -47,7 +47,11 @@ class Customer(models.Model):
     betline_per_mtg_recent_growth = models.FloatField(null=True)
     avg_bet_size_ytd_growth = models.FloatField(null=True)
     avg_bet_size_recent_growth = models.FloatField(null=True)
-    inv_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_PART_COUNT)
+    inv_part = models.CharField(max_length=8196, null=True)
+
+    @property
+    def inv_part_array(self):
+        return self.inv_part.split(";")
 
     def __str__(self):
         return self.source + ":" + str(self.id)

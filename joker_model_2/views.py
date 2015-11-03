@@ -3,8 +3,8 @@ import csv
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
-from serializers import *
 from joker_common.views import *
+from serializers import *
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -94,13 +94,14 @@ def add_cust_from_csv(request):
                     cust.active_rate_previous_83 = float(row["ACTIVE_RATE_PREVIOUS_83"])
                     inv_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
-                        inv_part.append(float(row["INV" + str(i + 1)]))
-                    cust.inv_part = inv_part
+                        inv_part.append(row["INV" + str(i + 1)])
+                    cust.inv_part = ";".join(inv_part)
                     cust.save()
                     count["success"] += 1
-                except TypeError:
+                except TypeError, exp:
                     count["fail"] += 1
-                    continue
+                    print "TypeError:", exp
+                print "\rImporting Row: " + str(count["processed"]),
             f.close()
         except IOError:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

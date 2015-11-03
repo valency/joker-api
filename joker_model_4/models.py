@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 
 CUST_INV_PART_COUNT = 83
 CUST_INV_EXOTIC_COUNT = 83
@@ -29,8 +28,16 @@ class Customer(models.Model):
     reason_code_2 = models.CharField(max_length=255, null=True)
     reason_code_3 = models.CharField(max_length=255, null=True)
     reason_code_4 = models.CharField(max_length=255, null=True)
-    inv_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_PART_COUNT)
-    inv_exotic_part = ArrayField(models.FloatField(blank=True), size=CUST_INV_EXOTIC_COUNT)
+    inv_part = models.CharField(max_length=8196, null=True)
+    inv_exotic_part = models.CharField(max_length=8196, null=True)
+
+    @property
+    def inv_part_array(self):
+        return self.inv_part.split(";")
+
+    @property
+    def inv_exotic_part_array(self):
+        return self.inv_exotic_part.split(";")
 
     def __str__(self):
         return self.source + ":" + str(self.id)

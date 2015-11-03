@@ -71,6 +71,8 @@ CORS_ORIGIN_WHITELIST = ()
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+SQLITE_DIR = ''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -78,9 +80,15 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '5432'
+    },
+    'auth_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': SQLITE_DIR + 'smartcube_users.db'
     }
 }
+
+DATABASE_ROUTERS = ['joker_common.routers.AuthRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
