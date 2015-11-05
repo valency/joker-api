@@ -19,10 +19,10 @@ reset_all() {
     done
     printf "done\n"
 
-    printf "%-70s" "Migrating..."
-    python manage.py migrate >>reset.log 2>&1
-    python manage.py migrate joker_auth --database=auth_db >>reset.log 2>&1
-    printf "done\n"
+    # printf "%-70s" "Migrating..."
+    # python manage.py migrate >>reset.log 2>&1
+    # python manage.py migrate joker_auth --database=auth_db >>reset.log 2>&1
+    # printf "done\n"
 }
 
 
