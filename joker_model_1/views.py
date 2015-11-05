@@ -177,6 +177,8 @@ def add_cust_from_csv(request):
                     cust.betline_per_mtg_recent_growth = float(row["BETLINE_PER_MTG_RECENT_GROWTH"])
                     cust.avg_bet_size_ytd_growth = float(row["AVG_BET_SIZE_YTD_GROWTH"])
                     cust.avg_bet_size_recent_growth = float(row["AVG_BET_SIZE_RECENT_GROWTH"])
+                    cust.active_rate_ytd_growth = float(row["ACTIVE_RATE_YTD_GROWTH"])
+                    cust.active_rate_recent_growth = float(row["ACTIVE_RATE_RECENT_GROWTH"])
                     inv_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
                         inv_part.append(row["INV" + str(i + 1)])

@@ -47,6 +47,8 @@ class Customer(models.Model):
     betline_per_mtg_recent_growth = models.FloatField(null=True)
     avg_bet_size_ytd_growth = models.FloatField(null=True)
     avg_bet_size_recent_growth = models.FloatField(null=True)
+    active_rate_ytd_growth = models.FloatField(null=True)
+    active_rate_recent_growth = models.FloatField(null=True)
     inv_part = models.CharField(max_length=8196, null=True)
 
     @property

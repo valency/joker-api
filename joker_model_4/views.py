@@ -82,27 +82,51 @@ def add_cust_from_csv(request):
                     cust.is_member = int(row["IS_MEMBER"]) > 0
                     cust.is_hrs_owner = int(row["IS_HRS_OWNER"]) > 0
                     cust.major_channel = row["MAJOR_CHANNEL"]
-                    cust.active_rate = float(row["ACTIVE_RATE"])
-                    cust.inv = float(row["INV"])
-                    cust.div = float(row["DIV"])
-                    cust.rr = float(row["RR"])
-                    cust.active_rate_exotic = float(row["ACTIVE_RATE_EXOTIC"])
+                    cust.ar = float(row["AR"])
+                    cust.inv_standard = float(row["INV_STANDARD"])
+                    cust.div_standard = float(row["DIV_STANDARD"])
+                    cust.rr_standard = float(row["RR_STANDARD"])
+                    cust.ar_exotic = float(row["AR_EXOTIC"])
                     cust.inv_exotic = float(row["INV_EXOTIC"])
                     cust.div_exotic = float(row["DIV_EXOTIC"])
                     cust.rr_exotic = float(row["RR_EXOTIC"])
-                    cust.score = float(row["SCORE"])
-                    cust.reason_code_1 = row["REASON_CODE_1"]
-                    cust.reason_code_2 = row["REASON_CODE_2"]
-                    cust.reason_code_3 = row["REASON_CODE_3"]
-                    cust.reason_code_4 = row["REASON_CODE_4"]
-                    inv_part = []
+                    cust.betline_standard = int(row["BETLINE_STANDARD"])
+                    cust.betline_exotic = int(row["BETLINE_EXOTIC"])
+                    cust.mtg_num = int(row["MTG_NUM"])
+                    cust.mtg_num_exotic = int(row["MTG_NUM_EXOTIC"])
+                    cust.end_bal = float(row["END_BAL"])
+                    cust.recharge_times = int(row["RECHARGE_TIMES"])
+                    cust.recharge_amount = float(row["RECHARGE_AMOUNT"])
+                    cust.withdraw_times = int(row["WITHDRAW_TIMES"])
+                    cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
+                    cust.betline_1_half = int(row["BETLINE_1_HALF"])
+                    cust.betline_2_half = int(row["BETLINE_2_HALF"])
+                    cust.betline_recent = int(row["BETLINE_RECENT"])
+                    cust.betline_exotic_recent = int(row["BETLINE_EXOTIC_RECENT"])
+                    cust.exotic_half_increase = int(row["EXOTIC_HALF_INCREASE"])
+                    cust.exotic_half_increase_ratio = float(row["EXOTIC_HALF_INCREASE_RATIO"])
+                    cust.exotic_percent_1_half = float(row["EXOTIC_PERCENT_1_HALF"])
+                    cust.exotic_percent_2_half = float(row["EXOTIC_PERCENT_2_HALF"])
+                    cust.exotic_percent_half_increase = float(row["EXOTIC_PERCENT_HALF_INCREASE"])
+                    cust.exotic_betline_percent = float(row["EXOTIC_BETLINE_PERCENT"])
+                    cust.score_hp_preference = float(row["SCORE_HP_PREFERENCE"])
+                    cust.score_hp_participation = float(row["SCORE_HP_PARTICIPATION"])
+                    cust.hp_preference_reason_code_1 = row["HP_PREFERENCE_REASON_CODE_1"]
+                    cust.hp_preference_reason_code_2 = row["HP_PREFERENCE_REASON_CODE_2"]
+                    cust.hp_preference_reason_code_3 = row["HP_PREFERENCE_REASON_CODE_3"]
+                    cust.hp_preference_reason_code_4 = row["HP_PREFERENCE_REASON_CODE_4"]
+                    cust.hp_participation_reason_code_1 = row["HP_PARTICIPATION_REASON_CODE_1"]
+                    cust.hp_participation_reason_code_2 = row["HP_PARTICIPATION_REASON_CODE_2"]
+                    cust.hp_participation_reason_code_3 = row["HP_PARTICIPATION_REASON_CODE_3"]
+                    cust.hp_participation_reason_code_4 = row["HP_PARTICIPATION_REASON_CODE_4"]
+                    betline_standard_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
-                        inv_part.append(row["INV" + str(i + 1)])
-                    cust.inv_part = ";".join(inv_part)
-                    inv_exotic_part = []
+                        betline_standard_part.append(row["BETLINE_STANDARD" + str(i + 1)])
+                    cust.betline_standard_part = ";".join(betline_standard_part)
+                    betline_exotic_part = []
                     for i in range(0, CUST_INV_EXOTIC_COUNT, 1):
-                        inv_exotic_part.append(row["INV_EXOTIC" + str(i + 1)])
-                    cust.inv_exotic_part = ";".join(inv_exotic_part)
+                        betline_exotic_part.append(row["BETLINE_EXOTIC" + str(i + 1)])
+                    cust.betline_exotic_part = ";".join(betline_exotic_part)
                     cust.save()
                     count["success"] += 1
                 except TypeError, exp:
