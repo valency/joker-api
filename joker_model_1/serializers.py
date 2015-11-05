@@ -12,6 +12,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class CustomerSetSerializer(serializers.ModelSerializer):
     cust = CustomerSerializer()
+    cluster_features = serializers.ListField(source='cluster_features_array')
 
     class Meta:
         model = CustomerSet

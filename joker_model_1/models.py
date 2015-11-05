@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 CUST_INV_PART_COUNT = 83
@@ -70,9 +69,13 @@ class CustomerSet(models.Model):
     cust = models.ForeignKey(Customer)
     cluster = models.IntegerField(null=True)
     cluster_time = models.DateTimeField(null=True)
-    cluster_features = ArrayField(models.CharField(max_length=32), null=True)
+    cluster_features = models.CharField(max_length=8196, null=True)
     cluster_count = models.IntegerField(null=True)
     cluster_metric = models.CharField(max_length=32, null=True)
+
+    @property
+    def cluster_features_array(self):
+        return self.cluster_features.split(";")
 
     def __str__(self):
         return str(self.id) + ":" + str(self.cluster)

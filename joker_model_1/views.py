@@ -106,7 +106,7 @@ def kmeans(request):
             cust_set_entity = cust_set.get(cust=cust)
             cust_set_entity.cluster = kmeans_xtoc[i]
             cust_set_entity.cluster_time = datetime.now()
-            cust_set_entity.cluster_features = header
+            cust_set_entity.cluster_features = ";".join(header)
             cust_set_entity.cluster_count = n_clusters
             cust_set_entity.cluster_metric = metric
             cust_set_entity.save()
