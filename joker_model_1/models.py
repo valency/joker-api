@@ -33,7 +33,6 @@ class Customer(models.Model):
     decline_reason_code_2 = models.CharField(max_length=255, null=True)
     decline_reason_code_3 = models.CharField(max_length=255, null=True)
     decline_reason_code_4 = models.CharField(max_length=255, null=True)
-    recent_growth_rate = models.FloatField(null=True)
     active_rate_previous_83 = models.FloatField(null=True)
     to_per_mtg = models.FloatField(null=True)
     betline_per_mtg = models.FloatField(null=True)
@@ -52,7 +51,10 @@ class Customer(models.Model):
 
     @property
     def inv_part_array(self):
-        return self.inv_part.split(";")
+        if self.inv_part:
+            return self.inv_part.split(";")
+        else:
+            return None
 
     def __str__(self):
         return self.source + ":" + str(self.id)
@@ -75,7 +77,10 @@ class CustomerSet(models.Model):
 
     @property
     def cluster_features_array(self):
-        return self.cluster_features.split(";")
+        if self.cluster_features:
+            return self.cluster_features.split(";")
+        else:
+            return None
 
     def __str__(self):
         return str(self.id) + ":" + str(self.cluster)

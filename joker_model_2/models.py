@@ -28,7 +28,10 @@ class Customer(models.Model):
 
     @property
     def inv_part_array(self):
-        return self.inv_part.split(";")
+        if self.inv_part:
+            return self.inv_part.split(";")
+        else:
+            return None
 
     def __str__(self):
         return self.source + ":" + str(self.id)

@@ -2,10 +2,8 @@ import csv
 import uuid
 from datetime import datetime
 from statsmodels.tools import categorical
-
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-
 import joker_common.kmeans as joker_kmeans
 from joker_common.views import *
 from serializers import *
@@ -164,8 +162,7 @@ def add_cust_from_csv(request):
                     cust.decline_reason_code_2 = row["DECLINE_REASON_CODE_2"]
                     cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
                     cust.decline_reason_code_4 = row["DECLINE_REASON_CODE_4"]
-                    cust.recent_growth_rate = float(row["RECENT_GROWTH_RATE"])
-                    cust.active_rate_previous_83 = float(row["RECENT_GROWTH_RATE"])
+                    cust.active_rate_previous_83 = float(row["ACTIVE_RATE_PREVIOUS_83"])
                     cust.to_per_mtg = float(row["TO_PER_MTG"])
                     cust.betline_per_mtg = float(row["BETLINE_PER_MTG"])
                     cust.avg_bet_size = float(row["AVG_BET_SIZE"])
@@ -289,6 +286,11 @@ def create_set(request):
                         else:
                             return Response(status=status.HTTP_400_BAD_REQUEST)
                 cust_set = filter_set
+            # Handle shuffle with maximum size
+            if "shuffle_with_limit" in request.GET:
+                cust_set = cust_set.order_by("?")
+                size_shuffle = int(cust_set.count() * float(request.GET["shuffle_with_limit"]))
+                cust_set = cust_set[:size_shuffle]
             # Handle size
             if size > 0:
                 cust_set = cust_set[:size]

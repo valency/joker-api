@@ -57,11 +57,17 @@ class Customer(models.Model):
 
     @property
     def betline_standard_part_array(self):
-        return self.betline_standard_part.split(";")
+        if self.betline_standard_part:
+            return self.betline_standard_part.split(";")
+        else:
+            return None
 
     @property
     def betline_exotic_part_array(self):
-        return self.betline_exotic_part.split(";")
+        if self.betline_standard_part:
+            return self.betline_standard_part.split(";")
+        else:
+            return None
 
     def __str__(self):
         return self.source + ":" + str(self.id)
