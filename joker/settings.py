@@ -16,6 +16,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'joker_auth',
     'joker_model_1',
     'joker_model_2',
@@ -31,7 +32,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware'
 )
 
 ROOT_URLCONF = 'joker.urls'
@@ -75,16 +76,16 @@ SQLITE_DIR = ''
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': SQLITE_DIR + 'smartcube.db'
+    },
+    'smartcube_models': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'smartcube',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432'
-    },
-    'auth_db': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SQLITE_DIR + 'smartcube_users.db'
     }
 }
 
@@ -106,6 +107,6 @@ STATIC_URL = '/static/'
 
 # HTTPS
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True

@@ -4,8 +4,8 @@ from datetime import datetime
 
 from rest_framework.decorators import api_view
 
-from serializers import *
 from joker_common.views import *
+from serializers import *
 
 
 @api_view(['GET'])
@@ -26,7 +26,7 @@ def csv_to_json(request):
 def env_get(request):
     if "key" in request.GET:
         try:
-            return Response(EnvironmentVariableSerializer(EnviromentVariable.objects.get(key=request.GET["key"])).data)
+            return Response(EnvironmentVariableSerializer(EnvironmentVariable.objects.get(key=request.GET["key"])).data)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     else:
@@ -37,7 +37,7 @@ def env_get(request):
 def env_set(request):
     if "key" in request.GET and "value" in request.GET:
         try:
-            env_var = EnviromentVariable(key=request.GET["key"], value=request.GET["value"], last_update=datetime.now())
+            env_var = EnvironmentVariable(key=request.GET["key"], value=request.GET["value"], last_update=datetime.now())
             env_var.save()
             return Response(EnvironmentVariableSerializer(env_var).data)
         except ObjectDoesNotExist:

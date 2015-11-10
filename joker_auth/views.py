@@ -1,11 +1,10 @@
-import uuid
-from datetime import datetime
-
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from rest_framework import viewsets, status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from serializers import *
 
@@ -19,12 +18,14 @@ class AccountViewSet(viewsets.ModelViewSet):
 def register(request):
     if "username" in request.POST and "password" in request.POST:
         try:
-            Account.objects.get(username=request.POST["username"])
+            User.objects.get(username=request.POST["username"])
             return Response(status=status.HTTP_409_CONFLICT)
         except ObjectDoesNotExist:
-            account = Account(username=request.POST["username"], password=request.POST["password"], register_time=datetime.now())
+            user = User.objects.create_user(username=request.POST["username"], password=request.POST["password"])
+            user.save()
+            account = Account(user=user)
             account.save()
-            return Response({"id": account.id})
+            return Response({"id": account.user.id})
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -33,19 +34,21 @@ def register(request):
 def login(request):
     if "username" in request.POST and "password" in request.POST:
         try:
-            account = Account.objects.get(username=request.POST["username"])
-            if account.password == request.POST["password"]:
-                account.ticket = str(uuid.uuid4())
-                account.last_login = datetime.now()
-                account.save()
-                return Response({
-                    "id": account.id,
-                    "ticket": account.ticket
-                })
-            else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            User.objects.get(username=request.POST["username"])
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        user = authenticate(username=request.POST["username"], password=request.POST["password"])
+        if user is not None:
+            if user.is_active:
+                token = Token.objects.get_or_create(user=user)
+                return Response({
+                    "id": Account.objects.get(user=user).id,
+                    "ticket": token[0].key
+                })
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -54,14 +57,22 @@ def login(request):
 def change_password(request):
     if "id" in request.POST and "old" in request.POST and "new" in request.POST:
         try:
-            account = Account.objects.get(id=request.POST["id"], password=request.POST["old"])
-            account.password = request.POST["new"]
-            account.last_update = datetime.now()
-            account.ticket = None
-            account.save()
-            return Response(status=status.HTTP_202_ACCEPTED)
+            account = Account.objects.get(id=int(request.POST["id"]))
+            print account
+            user = authenticate(username=account.user.username, password=request.POST["old"])
+            if user is not None:
+                if account.previous_password is not None and request.POST["new"] == account.previous_password:
+                    return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+                else:
+                    user.set_password(request.POST["new"])
+                    user.save()
+                    account.previous_password = request.POST["old"]
+                    account.save()
+                    return Response(status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
         except ObjectDoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_404_NOT_FOUND)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -70,10 +81,13 @@ def change_password(request):
 def verify(request):
     if "id" in request.GET and "ticket" in request.GET:
         try:
-            Account.objects.get(id=request.GET["id"], ticket=request.GET["ticket"])
-            return Response(status=status.HTTP_200_OK)
+            account = Account.objects.get(id=int(request.GET["id"]))
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        if request.GET["ticket"] == str(Token.objects.get(user=account.user)):
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

@@ -1,7 +1,7 @@
-from django.db import models
+from joker_auth.models import *
 
 
-class EnviromentVariable(models.Model):
+class EnvironmentVariable(models.Model):
     key = models.CharField(max_length=32, primary_key=True)
     value = models.CharField(max_length=255, null=True)
     last_update = models.DateTimeField()
