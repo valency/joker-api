@@ -64,8 +64,8 @@ class Customer(models.Model):
 
     @property
     def betline_exotic_part_array(self):
-        if self.betline_standard_part:
-            return self.betline_standard_part.split(";")
+        if self.betline_exotic_part:
+            return self.betline_exotic_part.split(";")
         else:
             return None
 
