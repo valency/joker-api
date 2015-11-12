@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -67,6 +69,7 @@ def change_password(request):
                     user.set_password(request.POST["new"])
                     user.save()
                     account.previous_password = request.POST["old"]
+                    account.last_change_of_password = datetime.now()
                     account.save()
                     return Response(status=status.HTTP_202_ACCEPTED)
             else:
@@ -85,7 +88,10 @@ def verify(request):
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         if request.GET["ticket"] == str(Token.objects.get(user=account.user)):
-            return Response(status=status.HTTP_200_OK)
+            return Response({
+                "id": account.id,
+                "last_change_of_password": account.last_change_of_password
+            })
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
     else:
