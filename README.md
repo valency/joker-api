@@ -1,3 +1,4 @@
+To set up the system:
 ```
 psql -h localhost -U postgres postgres -c "CREATE DATABASE smartcube;"
 python manage.py migrate
