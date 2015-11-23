@@ -1,5 +1,3 @@
-# Project Joker: API Layer
-
 ```
 psql -h localhost -U postgres postgres -c "CREATE DATABASE smartcube;"
 python manage.py migrate
