@@ -13,4 +13,4 @@ The following settings of API server may need to be changed:
 - `DATA_PATH` (`/home/smartcube/local/...`) in `joker_common/views.py`
 
 The following settings of UI server may need to be changed:
-- `API_PORT`, `API_PROTOCOL` in `js/common.js`
+- `API_PORT` (`443`), `API_PROTOCOL` (`https`) in `js/conf.js`
