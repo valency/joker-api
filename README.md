@@ -10,7 +10,7 @@ python manage.py collectstatic
 The following settings of API server may need to be changed:
 - `SQLITE_DIR` (`/data/var/`) in `joker/settings.py`
 - `USER` (`smartcube`) under `DATABASES` in `joker/settings.py`
-- `DATA_PATH` in `joker_common/views.py`
+- `DATA_PATH` (`/home/smartcube/local/...`) in `joker_common/views.py`
 
 The following settings of UI server may need to be changed:
-- `API_PORT`, `API_PROTOCOL` in `js/common.js`
+- `API_PORT` (`443`), `API_PROTOCOL` (`https`) in `js/conf.js`
