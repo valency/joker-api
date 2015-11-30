@@ -14,3 +14,5 @@ The following settings of API server may need to be changed:
 
 The following settings of UI server may need to be changed:
 - `API_PORT` (`443`), `API_PROTOCOL` (`https`) in `js/conf.js`
+- `$DOMAIN` (`127.0.0.1:8080`) in `components/common.php`
+- `chmod a+w` for `data`, `validation`, and `validation/ground-truth`
