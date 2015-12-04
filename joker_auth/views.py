@@ -43,8 +43,11 @@ def login(request):
         if user is not None:
             if user.is_active:
                 token = Token.objects.get_or_create(user=user)
+                account = Account.objects.get(user=user)
+                account.last_log_in = datetime.now()
+                account.save()
                 return Response({
-                    "id": Account.objects.get(user=user).id,
+                    "id": account.id,
                     "ticket": token[0].key
                 })
             else:
@@ -90,6 +93,7 @@ def verify(request):
         if request.GET["ticket"] == str(Token.objects.get(user=account.user)):
             return Response({
                 "id": account.id,
+                "last_log_in": account.last_log_in,
                 "last_change_of_password": account.last_change_of_password
             })
         else:
