@@ -21,7 +21,8 @@ INSTALLED_APPS = (
     'joker_model_1',
     'joker_model_2',
     'joker_model_4',
-    'joker_tools'
+    'joker_tools',
+    'joker_connector'
 )
 
 MIDDLEWARE_CLASSES = (
