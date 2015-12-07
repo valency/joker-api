@@ -15,5 +15,7 @@ urlpatterns = [
     url(r'job-submit/$', views.job_submit),
     url(r'job-remove/$', views.job_remove),
     url(r'job-top/$', views.job_top),
-    url(r'job-reset/$', views.job_reset)
+    url(r'job-reset/$', views.job_reset),
+    url(r'job-module-install/$', views.job_module_install),
+    url(r'job-module-uninstall/$', views.job_module_uninstall)
 ]

@@ -5,6 +5,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from joker_common.views import DATA_PATH
+
 
 class SmartCubeAdminClient(xmlrpclib.ServerProxy):
     def __init__(self, host, port, rpc_path='/RPC2'):
@@ -152,6 +154,31 @@ def job_profile_remove(request):
         try:
             SC_ADMIN.job_profile_remove(module, profile)
             return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as exp:
+            return Response(str(exp), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def job_module_uninstall(request):
+    if "module" in request.GET:
+        module = request.GET["module"]
+        try:
+            SC_ADMIN.job_module_uninstall(module)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as exp:
+            return Response(str(exp), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def job_module_install(request):
+    if "src" in request.GET:
+        package_file = DATA_PATH + "module/" + request.GET["src"]
+        try:
+            return Response(SC_ADMIN.job_module_install(package_file))
         except Exception as exp:
             return Response(str(exp), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
