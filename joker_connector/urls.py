@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'job-top/$', views.job_top),
     url(r'job-reset/$', views.job_reset),
     url(r'job-module-install/$', views.job_module_install),
-    url(r'job-module-uninstall/$', views.job_module_uninstall)
+    url(r'job-module-uninstall/$', views.job_module_uninstall),
+    url(r'dataset-list/$', views.dataset_list)
 ]

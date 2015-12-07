@@ -16,7 +16,7 @@ class SmartCubeAdminClient(xmlrpclib.ServerProxy):
 
 
 SC_ADMIN = SmartCubeAdminClient(
-    host=os.environ.get('SMARTCUBE_ADMIN_CORE_HOST', 'scworker00'),
+    host=os.environ.get('SMARTCUBE_ADMIN_CORE_HOST', 'localhost'),
     port=int(os.environ.get('SMARTCUBE_ADMIN_CORE_PORT', '19800'))
 )
 
@@ -183,3 +183,8 @@ def job_module_install(request):
             return Response(str(exp), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def dataset_list(request):
+    return Response(SC_ADMIN.dataset_list())
