@@ -73,7 +73,7 @@ CORS_ORIGIN_WHITELIST = ()
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-SQLITE_DIR = '/data/var/'
+SQLITE_DIR = ''
 
 DATABASES = {
     'default': {
@@ -83,7 +83,7 @@ DATABASES = {
     'smartcube_models': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'smartcube',
-        'USER': 'smartcube',
+        'USER': 'postgres',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432'
