@@ -11,7 +11,10 @@ urlpatterns = [
     url(r'', include('rest_framework.urls', namespace='rest_framework')),
     url(r'sign-in/$', views.login),
     url(r'register/$', views.register),
-    url(r'password/$', views.change_password),
+    url(r'change-password/$', views.change_password),
     url(r'verify/$', views.verify),
-    url(r'trust/$', views.trust)
+    url(r'trust/$', views.trust),
+    url(r'list-users/$', views.list_users),
+    url(r'remove-user/$', views.remove_user),
+    url(r'reset-password/$', views.reset_password)
 ]

@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime
 
 from django.contrib.auth import authenticate
@@ -63,7 +64,6 @@ def change_password(request):
     if "id" in request.POST and "old" in request.POST and "new" in request.POST:
         try:
             account = Account.objects.get(id=int(request.POST["id"]))
-            print account
             user = authenticate(username=account.user.username, password=request.POST["old"])
             if user is not None:
                 if account.previous_password is not None and request.POST["new"] == account.previous_password:
@@ -106,3 +106,52 @@ def verify(request):
 def trust(request):
     html = "<html><body style='margin:10px;'><p>Success!</p><p>You can close this page now.</p></body></html>"
     return HttpResponse(html)
+
+
+@api_view(['GET'])
+def list_users(request):
+    if "_c" in request.GET and "_t" in request.GET:
+        if request.GET["_c"] == hashlib.md5("SmartCube-" + request.GET["_t"]).hexdigest():
+            return Response(AccountSerializer(Account.objects.all(), many=True).data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def remove_user(request):
+    if "id" in request.GET and "_c" in request.GET and "_t" in request.GET:
+        if request.GET["_c"] == hashlib.md5("SmartCube-" + request.GET["_t"]).hexdigest():
+            try:
+                account = Account.objects.get(id=request.GET["id"])
+                account.user.delete()
+                account.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def reset_password(request):
+    if "id" in request.GET and "_c" in request.GET and "_t" in request.GET:
+        if request.GET["_c"] == hashlib.md5("SmartCube-" + request.GET["_t"]).hexdigest():
+            try:
+                account = Account.objects.get(id=int(request.GET["id"]))
+                user = account.user
+                account.previous_password = user.password
+                account.last_change_of_password = datetime.now()
+                user.set_password(hashlib.md5(request.GET["_c"]).hexdigest())
+                user.save()
+                account.save()
+                return Response({"username": user.username, "password": request.GET["_c"]})
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
