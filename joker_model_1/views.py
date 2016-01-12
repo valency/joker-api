@@ -152,16 +152,6 @@ def add_cust_from_csv(request):
                     cust.recharge_amount = float(row["RECHARGE_AMOUNT"])
                     cust.withdraw_times = int(row["WITHDRAW_TIMES"])
                     cust.withdraw_amount = float(row["WITHDRAW_AMOUNT"])
-                    cust.grow_prop = float(row["GROW_PROPENSITY"])
-                    cust.decline_prop = float(row["DECLINE_PROPENSITY"])
-                    cust.grow_reason_code_1 = row["GROW_REASON_CODE_1"]
-                    cust.grow_reason_code_2 = row["GROW_REASON_CODE_2"]
-                    cust.grow_reason_code_3 = row["GROW_REASON_CODE_3"]
-                    cust.grow_reason_code_4 = row["GROW_REASON_CODE_4"]
-                    cust.decline_reason_code_1 = row["DECLINE_REASON_CODE_1"]
-                    cust.decline_reason_code_2 = row["DECLINE_REASON_CODE_2"]
-                    cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
-                    cust.decline_reason_code_4 = row["DECLINE_REASON_CODE_4"]
                     cust.active_rate_previous_83 = float(row["ACTIVE_RATE_PREVIOUS_83"])
                     cust.to_per_mtg = float(row["TO_PER_MTG"])
                     cust.betline_per_mtg = float(row["BETLINE_PER_MTG"])
@@ -176,6 +166,20 @@ def add_cust_from_csv(request):
                     cust.avg_bet_size_recent_growth = float(row["AVG_BET_SIZE_RECENT_GROWTH"])
                     cust.active_rate_ytd_growth = float(row["ACTIVE_RATE_YTD_GROWTH"])
                     cust.active_rate_recent_growth = float(row["ACTIVE_RATE_RECENT_GROWTH"])
+                    cust.turnover_ratio = float(row["TURNOVER_RATIO"])
+                    cust.active_rate_ratio = float(row["ACTIVE_RATE_RATIO"])
+                    cust.recovery_rate_ratio = float(row["RECOVERY_RATE_RATIO"])
+                    cust.amplification = float(row["AMPLIFICATION"])
+                    cust.grow_prop = float(row["GROW_PROPENSITY"])
+                    cust.decline_prop = float(row["DECLINE_PROPENSITY"])
+                    cust.grow_reason_code_1 = row["GROW_REASON_CODE_1"]
+                    cust.grow_reason_code_2 = row["GROW_REASON_CODE_2"]
+                    cust.grow_reason_code_3 = row["GROW_REASON_CODE_3"]
+                    cust.grow_reason_code_4 = row["GROW_REASON_CODE_4"]
+                    cust.decline_reason_code_1 = row["DECLINE_REASON_CODE_1"]
+                    cust.decline_reason_code_2 = row["DECLINE_REASON_CODE_2"]
+                    cust.decline_reason_code_3 = row["DECLINE_REASON_CODE_3"]
+                    cust.decline_reason_code_4 = row["DECLINE_REASON_CODE_4"]
                     inv_part = []
                     for i in range(0, CUST_INV_PART_COUNT, 1):
                         inv_part.append(row["INV" + str(i + 1)])
