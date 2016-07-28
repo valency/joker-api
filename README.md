@@ -5,6 +5,8 @@ python manage.py migrate
 python manage.py migrate --database=smartcube_models
 python manage.py createsuperuser
 python manage.py collectstatic
+mv static /var/www/html/
+python manage.py runserver 0.0.0.0:9002
 ```
 
 The following settings of API server may need to be changed:
