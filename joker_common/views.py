@@ -1,19 +1,39 @@
 import StringIO
 import importlib
+import numpy
 from collections import Counter
 
-import numpy
 import xlsxwriter
-from djqscsv import render_to_csv_response
-from rest_framework import status
-from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse
+from djqscsv import render_to_csv_response
+from rest_framework import status
+from rest_framework.response import Response
 
 DATA_PATH = "/var/www/html/joker/data/"
+DATA_NAME_PREFIX = {
+    "1": "model-result-grow_or_decline-",
+    "2": "model-result-new_customers-",
+    "4": "model-result-bet_type-"
+}
 CATEGORICAL_COLUMNS = ["id", "segment", "age", "gender", "is_member", "is_hrs_owner", "major_channel"]
+REASON_CODES = [
+    {"rcode_id": 0, "desc": "N/A"},
+    {"rcode_id": 1, "desc": "The active rate of recent 2 months is [0] times higher than before"},
+    {"rcode_id": 2, "desc": "The avg. turnover per mtg. of recent 2 months increases by [0]"},
+    {"rcode_id": 3, "desc": "The turnover has an increasing trend in recent 2 months"},
+    {"rcode_id": 4, "desc": "The recovery rate of recent 2 months is [0] times higher than before"},
+    {"rcode_id": 5, "desc": "The active rate of recent 2 months is [0] times lower than before"},
+    {"rcode_id": 6, "desc": "The avg. turnover per mtg. of recent 2 months decreases by [0]"},
+    {"rcode_id": 7, "desc": "The turnover has a decreasing trend in recent 2 months"},
+    {"rcode_id": 8, "desc": "The recovery rate of recent 2 months is [0] times lower than before"},
+    {"rcode_id": 9, "desc": "The active rate of recent 2 months is as high as [0]"},
+    {"rcode_id": 10, "desc": "The avg. turnover per meeting of recent 2 months increases by [0]"},
+    {"rcode_id": 11, "desc": "The active rate of recent two months is [0] times higher than before"},
+    {"rcode_id": 12, "desc": "Older than 40"}
+]
 
 
 def scale_linear_by_column(rawpoints, high=1.0, low=0.0):
