@@ -72,6 +72,16 @@ def search_reason_code(rc):
     return [i["rcode_id"] for i in REASON_CODES if i["desc"] == reason_codes[max_index]][0]
 
 
+def repr_reason_code(rc_id, rc_text):
+    if rc_id == 0 or rc_text == "NA":
+        return None
+    rc = [i["desc"] for i in REASON_CODES if rc_id == i["rcode_id"]][0]
+    if "[0]" in rc.split(" "):
+        return rc_text.split(" ")[rc.split(" ").index("[0]")]
+    else:
+        return None
+
+
 def create_empty_cust(date, cust_id):
     return {
         "date": date,
@@ -198,22 +208,22 @@ def full_result(request):
         c = create_empty_cust(meta_date, cust.id)
         c["grow_score"] = cust.grow_prop
         c["grow_rcode_1"] = search_reason_code(cust.grow_reason_code_1)
-        c["grow_rcode_value_1"] = cust.grow_reason_code_1
+        c["grow_rcode_value_1"] = repr_reason_code(c["grow_rcode_1"], cust.grow_reason_code_1)
         c["grow_rcode_2"] = search_reason_code(cust.grow_reason_code_2)
-        c["grow_rcode_value_2"] = cust.grow_reason_code_2
+        c["grow_rcode_value_2"] = repr_reason_code(c["grow_rcode_2"], cust.grow_reason_code_2)
         c["grow_rcode_3"] = search_reason_code(cust.grow_reason_code_3)
-        c["grow_rcode_value_3"] = cust.grow_reason_code_3
+        c["grow_rcode_value_3"] = repr_reason_code(c["grow_rcode_3"], cust.grow_reason_code_3)
         c["grow_rcode_4"] = search_reason_code(cust.grow_reason_code_4)
-        c["grow_rcode_value_4"] = cust.grow_reason_code_4
+        c["grow_rcode_value_4"] = repr_reason_code(c["grow_rcode_4"], cust.grow_reason_code_4)
         c["decline_score"] = cust.decline_prop
         c["decline_rcode_1"] = search_reason_code(cust.decline_reason_code_1)
-        c["decline_rcode_value_1"] = cust.decline_reason_code_1
+        c["decline_rcode_value_1"] = repr_reason_code(c["decline_rcode_1"], cust.decline_reason_code_1)
         c["decline_rcode_2"] = search_reason_code(cust.decline_reason_code_2)
-        c["decline_rcode_value_2"] = cust.decline_reason_code_2
+        c["decline_rcode_value_2"] = repr_reason_code(c["decline_rcode_2"], cust.decline_reason_code_2)
         c["decline_rcode_3"] = search_reason_code(cust.decline_reason_code_3)
-        c["decline_rcode_value_3"] = cust.decline_reason_code_3
+        c["decline_rcode_value_3"] = repr_reason_code(c["decline_rcode_3"], cust.decline_reason_code_3)
         c["decline_rcode_4"] = search_reason_code(cust.decline_reason_code_4)
-        c["decline_rcode_value_4"] = cust.decline_reason_code_4
+        c["decline_rcode_value_4"] = repr_reason_code(c["decline_rcode_4"], cust.decline_reason_code_4)
         resp.append(c)
     for cust in Customer2.objects.filter(source=target_file["2"]):
         c = None
@@ -226,13 +236,13 @@ def full_result(request):
             resp.append(c)
         c["regular_score"] = cust.chance_to_be_regular
         c["regular_rcode_1"] = search_reason_code(cust.reason_code_1)
-        c["regular_rcode_value_1"] = cust.reason_code_1
+        c["regular_rcode_value_1"] = repr_reason_code(c["regular_rcode_1"], cust.reason_code_1)
         c["regular_rcode_2"] = search_reason_code(cust.reason_code_2)
-        c["regular_rcode_value_2"] = cust.reason_code_2
+        c["regular_rcode_value_2"] = repr_reason_code(c["regular_rcode_2"], cust.reason_code_2)
         c["regular_rcode_3"] = search_reason_code(cust.reason_code_3)
-        c["regular_rcode_value_3"] = cust.reason_code_3
+        c["regular_rcode_value_3"] = repr_reason_code(c["regular_rcode_3"], cust.reason_code_3)
         c["regular_rcode_4"] = search_reason_code(cust.reason_code_4)
-        c["regular_rcode_value_4"] = cust.reason_code_4
+        c["regular_rcode_value_4"] = repr_reason_code(c["regular_rcode_4"], cust.reason_code_4)
     for cust in Customer4.objects.filter(source=target_file["4"]):
         c = None
         for cc in resp:
