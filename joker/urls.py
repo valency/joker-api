@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^model/1/', include('joker_model_1.urls')),
     url(r'^model/2/', include('joker_model_2.urls')),
     url(r'^model/4/', include('joker_model_4.urls')),
+    url(r'^summary/', include('joker_summary.urls')),
     url(r'^tool/', include('joker_tools.urls')),
     url(r'^connector/', include('joker_connector.urls'))
 ]

@@ -1,10 +1,9 @@
-# from __future__ import division
+import numpy
 import random
 import sys
-import numpy
-from time import time
-from scipy.spatial.distance import cdist
 from scipy.sparse import issparse
+from scipy.spatial.distance import cdist
+from time import time
 
 
 def kmeans(X, centres, delta=.001, maxiter=10, metric="euclidean", p=2, verbose=0):
@@ -16,7 +15,7 @@ def kmeans(X, centres, delta=.001, maxiter=10, metric="euclidean", p=2, verbose=
     if dim != cdim:
         raise ValueError("kmeans: X %s and centres %s must have the same number of columns" % (X.shape, centres.shape))
     if verbose:
-        print "kmeans: X %s  centres %s  delta=%.2g  maxiter=%d  metric=%s" % (X.shape, centres.shape, delta, maxiter, metric)
+        print("kmeans: X %s  centres %s  delta=%.2g  maxiter=%d  metric=%s" % (X.shape, centres.shape, delta, maxiter, metric))
     allx = numpy.arange(N)
     prevdist = 0
     jiter = None
@@ -28,7 +27,7 @@ def kmeans(X, centres, delta=.001, maxiter=10, metric="euclidean", p=2, verbose=
         distances = D[allx, xtoc]
         avdist = distances.mean()  # median ?
         if verbose >= 2:
-            print "kmeans: av |X - nearest centre| = %.4g" % avdist
+            print("kmeans: av |X - nearest centre| = %.4g" % avdist)
         if (1 - delta) * prevdist <= avdist <= prevdist or jiter == maxiter:
             break
         prevdist = avdist
@@ -37,7 +36,7 @@ def kmeans(X, centres, delta=.001, maxiter=10, metric="euclidean", p=2, verbose=
             if len(c) > 0:
                 centres[jc] = X[c].mean(axis=0)
     if verbose:
-        print "kmeans: %d iterations  cluster sizes:" % jiter, numpy.bincount(xtoc)
+        print("kmeans: %d iterations  cluster sizes:" % jiter, numpy.bincount(xtoc))
     return centres, xtoc, distances
 
 
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     numpy.random.seed(seed)
     random.seed(seed)
 
-    print "N %d  dim %d  ncluster %d  kmsample %d  metric %s" % (N, dim, ncluster, kmsample, metric)
+    print("N %d  dim %d  ncluster %d  kmsample %d  metric %s" % (N, dim, ncluster, kmsample, metric))
     X = numpy.random.exponential(size=(N, dim))
 
     t0 = time()
@@ -103,4 +102,4 @@ if __name__ == "__main__":
     else:
         randomcentres = randomsample(X, ncluster)
         centres, xtoc, dist = kmeans(X, randomcentres, delta=kmdelta, maxiter=kmiter, metric=metric, verbose=2)
-    print "%.0f msec" % ((time() - t0) * 1000)
+    print("%.0f msec" % ((time() - t0) * 1000))
