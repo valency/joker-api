@@ -2,7 +2,7 @@
 ## Install Compulsory Packages
 ```
 apt install git vim screen php-curl php-fpm postgresql postgresql-contrib nginx python-pip python-psycopg2 python-pandas python-numpy python-scipy
-pip install Django djangorestframework django-filter django-cors-headers django-queryset-csv
+pip install Django djangorestframework django-filter django-cors-headers django-queryset-csv xlsxwriter
 ```
 ## Configure PostgreSQL
 ```
@@ -39,7 +39,6 @@ sudo service nginx restart
 psql -h localhost -U postgres postgres -c "CREATE DATABASE smartcube;"
 python manage.py migrate
 python manage.py migrate --database=joker_models
-python manage.py createsuperuser
 python manage.py collectstatic
 mv static /var/www/html/
 python manage.py runserver 0.0.0.0:9002
