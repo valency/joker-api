@@ -183,7 +183,10 @@ class ModelTools:
     def histogram(self, request):
         if "field" in request.GET and "categorical" in request.GET and "source" in request.GET:
             field = request.GET["field"]
-            cust = self.Customer.objects.filter(source=request.GET["source"]).values_list(field, flat=True)
+            cust = self.Customer.objects.filter(source=request.GET["source"])
+            if "segment" in request.GET:
+                cust = cust.filter(segment__in=request.GET["segment"].split(","))
+            cust = cust.values_list(field, flat=True)
             if request.GET["categorical"] == "true":
                 hist = numpy.divide(Counter(cust).values(), [float(len(cust))])
                 bin_edges = Counter(cust).keys()
