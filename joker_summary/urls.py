@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'channel-shares/$', channel_shares),
     url(r'wakeup-rate/$', wakeup_rate),
     url(r'active-rate/$', active_rate),
+    url(r'active-rate-new/$', active_rate_new_cust),
     url(r'active-analysis/$', active_analysis),
     url(r'growth-in-detail/$', growth_in_detail)
 ]

@@ -14,6 +14,7 @@ CHANNEL = dict()
 CUSTOMER = dict()
 ACTIVE = dict()
 CUST_ANALYSIS = dict()
+NEW_CUST_SUMMARY = dict()
 
 
 def get_summary_by_season(season):
@@ -232,7 +233,7 @@ def active_rate(request):
     if "season" in request.GET and "type" in request.GET:
         start = time.time()
         season = int(request.GET["season"])
-        summary = get_summary_by_season(season, )
+        summary = get_summary_by_season(season)
         summary_last = get_summary_by_season(season - 1)
         if "segment" in request.GET:
             segment = request.GET["segment"].split(",")
@@ -506,6 +507,87 @@ def active_analysis(request):
         return Response({
             "num_cust_previous_season": num_cust_last,
             "num_cust_this_season": num_cust
+        })
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# Below is new APIs
+def get_new_cust_summary_by_season(season):
+    global NEW_CUST_SUMMARY
+    if season not in NEW_CUST_SUMMARY:
+        NEW_CUST_SUMMARY[season] = create_new_cust_summary_dict(season)
+    return NEW_CUST_SUMMARY[season]
+
+
+def create_new_cust_summary_dict(season):
+    print(colorize("Creating new customer summary cache for season " + str(season) + "...", fg="green"))
+    summary_dict = dict()
+    start = time.time()
+    stat_result = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N", cust_id__is_new_cust=1).values("global_mtg_seqno", "cust_id__segment_code").annotate(Avg("global_mtg_seqno__season_mtg_seqno"), Count("cust_id"), Sum("standard_turnover"), Sum("exotic_turnover"), Sum("standard_betline"), Sum("exotic_betline"), Sum("race_num"), Sum("active_rate_ytd"), Sum("active_mtg_ytd"), Sum("standard_turnover_ytd"), Sum("exotic_turnover_ytd"), Sum("standard_betline_ytd"), Sum("exotic_betline_ytd")).order_by("global_mtg_seqno")
+    for value_list in stat_result:
+        if value_list["cust_id__segment_code"] is None:
+            value_list["cust_id__segment_code"] = "other"
+        if not summary_dict.has_key(value_list["cust_id__segment_code"]):
+            summary_dict[value_list["cust_id__segment_code"]] = dict()
+        summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]] = value_list
+    end = time.time()
+    print(colorize("Creating summary cache takes " + str(end - start) + " seconds.", fg="green"))
+    return summary_dict
+
+
+@api_view(['GET'])
+def active_rate_new_cust(request):
+    if "season" in request.GET and "type" in request.GET:
+        start = time.time()
+        season = int(request.GET["season"])
+        summary = get_new_cust_summary_by_season(season)
+        summary_last = get_new_cust_summary_by_season(season - 1)
+        if "segment" in request.GET:
+            segment = request.GET["segment"].split(",")
+        else:
+            segment = summary.keys()
+        global_mtg_seqno = summary[summary.keys()[0]].keys()
+        global_mtg_seqno.sort()
+        global_mtg_seqno_last = summary_last[summary_last.keys()[0]].keys()
+        global_mtg_seqno_last.sort()
+        num_cust = [0 for i in range(len(global_mtg_seqno))]
+        num_cust_last = [0 for i in range(len(global_mtg_seqno))]
+        active_rate_sum = [0 for i in range(len(global_mtg_seqno))]
+        active_rate_sum_last = [0 for i in range(len(global_mtg_seqno))]
+        meeting_id = [-1 for i in range(len(global_mtg_seqno))]
+        meeting_id_last = [-1 for i in range(len(global_mtg_seqno))]
+        for i in range(len(global_mtg_seqno)):
+            for s in segment:
+                if summary.has_key(s) and summary[s].has_key(global_mtg_seqno[i]):
+                    meeting_id[i] = int(summary[s][global_mtg_seqno[i]]["global_mtg_seqno__season_mtg_seqno__avg"])
+                    num_cust[i] += summary[s][global_mtg_seqno[i]]["cust_id__count"]
+                    active_rate_sum[i] += summary[s][global_mtg_seqno[i]]["active_rate_ytd__sum"]
+                if request.GET["type"] == "year":
+                    if summary_last.has_key(s) and summary_last[s].has_key(global_mtg_seqno_last[i]):
+                        meeting_id_last[i] = int(summary_last[s][global_mtg_seqno_last[i]]["global_mtg_seqno__season_mtg_seqno__avg"])
+                        num_cust_last[i] += summary_last[s][global_mtg_seqno_last[i]]["cust_id__count"]
+                        active_rate_sum_last[i] += summary_last[s][global_mtg_seqno_last[i]]["active_rate_ytd__sum"]
+                elif request.GET["type"] == "month":
+                    if i < 16:
+                        if summary_last.has_key(s) and summary_last[s].has_key(global_mtg_seqno[i] - 16):
+                            meeting_id_last[i] = int(summary_last[s][global_mtg_seqno[i] - 16]["global_mtg_seqno__season_mtg_seqno__avg"])
+                            num_cust_last[i] += summary_last[s][global_mtg_seqno[i] - 16]["cust_id__count"]
+                            active_rate_sum_last[i] += summary_last[s][global_mtg_seqno[i] - 16]["active_rate_ytd__sum"]
+                    else:
+                        if summary.has_key(s) and summary[s].has_key(global_mtg_seqno[i] - 16):
+                            meeting_id_last[i] = int(summary[s][global_mtg_seqno[i] - 16]["global_mtg_seqno__season_mtg_seqno__avg"])
+                            num_cust_last[i] += summary[s][global_mtg_seqno[i] - 16]["cust_id__count"]
+                            active_rate_sum_last[i] += summary[s][global_mtg_seqno[i] - 16]["active_rate_ytd__sum"]
+        active_rate_current = [float(active_rate_sum[i]) / float(num_cust[i]) for i in range(len(active_rate_sum))]
+        active_rate_last = [float(active_rate_sum_last[i]) / float(num_cust_last[i]) for i in range(len(active_rate_sum_last))]
+        end = time.time()
+        print "Task time: " + str(end - start) + " seconds..."
+        return Response({
+            "active_rate_last": active_rate_last,
+            "active_rate": active_rate_current,
+            "meeting_id_last": meeting_id_last,
+            "meeting_id": meeting_id
         })
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
