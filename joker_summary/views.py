@@ -1,6 +1,8 @@
 import time
+import numpy
+from collections import Counter
 
-from django.db.models import Avg, Sum, Min
+from django.db.models import Avg, Sum, Min, Max
 from django.db.models import Count
 from django.utils.termcolors import colorize
 from rest_framework import status
@@ -14,7 +16,9 @@ CHANNEL = dict()
 CUSTOMER = dict()
 ACTIVE = dict()
 CUST_ANALYSIS = dict()
+# New cache
 NEW_CUST_SUMMARY = dict()
+BET_TYPE = dict()
 
 
 def get_summary_by_season(season):
@@ -536,6 +540,33 @@ def create_new_cust_summary_dict(season):
     return summary_dict
 
 
+def get_bet_type_by_season(season):
+    global BET_TYPE
+    if season not in BET_TYPE:
+        BET_TYPE[season] = create_bet_type_dict(season)
+    return BET_TYPE[season]
+
+
+def create_bet_type_dict(season):
+    print colorize("Creating bet type cache for season " + str(season) + "...", fg="green")
+    bettype_dict = dict()
+    start = time.time()
+    bettype_info = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N").values("turnover_bettype_details", "cust_id__segment_code")
+    for info in bettype_info:
+        if info["cust_id__segment_code"] is None:
+            info["cust_id__segment_code"] = "other"
+        if not bettype_dict.has_key(info["cust_id__segment_code"]):
+            bettype_dict[info["cust_id__segment_code"]] = dict()
+        for bet in info["turnover_bettype_details"]:
+            if not bettype_dict[info["cust_id__segment_code"]].has_key(bet):
+                bettype_dict[info["cust_id__segment_code"]][bet] = dict()
+                bettype_dict[info["cust_id__segment_code"]][bet]["turnover"] = 0.0
+            bettype_dict[info["cust_id__segment_code"]][bet]["turnover"] += info["turnover_bettype_details"][bet][0]
+    end = time.time()
+    print "Creating bet type cache takes " + str(end - start) + " seconds..."
+    return bettype_dict
+
+
 @api_view(['GET'])
 def active_rate_new_cust(request):
     if "season" in request.GET and "type" in request.GET:
@@ -588,6 +619,63 @@ def active_rate_new_cust(request):
             "active_rate": active_rate_current,
             "meeting_id_last": meeting_id_last,
             "meeting_id": meeting_id
+        })
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def active_rate_latest(request):
+    if "season" in request.GET:
+        start = time.time()
+        season = int(request.GET["season"])
+        transact = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N")
+        if "segment" in request.GET:
+            transact = transact.filter(segment__in=request.GET["segment"].split(","))
+        latest_seqno = transact.aggregate(Max("global_mtg_seqno"))['global_mtg_seqno__max']
+        summary = transact.filter(global_mtg_seqno=latest_seqno).values_list("active_rate_ytd", flat=True)
+        if request.GET["categorical"] == "true":
+            hist = numpy.divide(Counter(summary).values(), [float(len(summary))])
+            bin_edges = Counter(summary).keys()
+        else:
+            bins = 10
+            if "bins" in request.GET:
+                bins = numpy.fromstring(request.GET["bins"], dtype=float, sep=',')
+            hist, bin_edges = numpy.histogram([float(s) for s in summary], bins)
+            hist = numpy.divide(hist, [float(len(summary))])
+            bin_edges = bin_edges.tolist()
+        end = time.time()
+        print "Task time: " + str(end - start) + " seconds..."
+        return Response({
+            "hist": hist,
+            "bin_edges": bin_edges
+        })
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def bet_type(request):
+    if "season" in request.GET:
+        start = time.time()
+        season = int(request.GET["season"])
+        bettype = get_bet_type_by_season(season)
+        if "segment" in request.GET:
+            segment = request.GET["segment"].split(",")
+        else:
+            segment = bettype.keys()
+        major_type = bettype[bettype.keys()[0]].keys()
+        turnover = [0.0 for i in range(len(major_type))]
+        for i in range(len(major_type)):
+            for s in segment:
+                if bettype.has_key(s) and bettype[s].has_key(major_type[i]):
+                    turnover[i] += bettype[s][major_type[i]]["turnover"]
+        ratio = [s / sum(turnover) for s in turnover]
+        end = time.time()
+        print "Task time: " + str(end - start) + " seconds..."
+        return Response({
+            "major_type": major_type,
+            "turnover_ytd": ratio,
         })
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
