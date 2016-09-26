@@ -631,7 +631,7 @@ def active_rate_latest(request):
         season = int(request.GET["season"])
         transact = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N")
         if "segment" in request.GET:
-            transact = transact.filter(segment__in=request.GET["segment"].split(","))
+            transact = transact.filter(cust_id__segment_code__in=request.GET["segment"].split(","))
         latest_seqno = transact.aggregate(Max("global_mtg_seqno"))['global_mtg_seqno__max']
         summary = transact.filter(global_mtg_seqno=latest_seqno).values_list("active_rate_ytd", flat=True)
         if request.GET["categorical"] == "true":
