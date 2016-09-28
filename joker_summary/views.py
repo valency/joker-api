@@ -612,13 +612,17 @@ def active_rate_new_cust(request):
                             active_rate_sum_last[i] += summary[s][global_mtg_seqno[i] - 16]["active_rate_ytd__sum"]
         active_rate_current = [float(active_rate_sum[i]) / float(num_cust[i]) for i in range(len(active_rate_sum))]
         active_rate_last = [float(active_rate_sum_last[i]) / float(num_cust_last[i]) for i in range(len(active_rate_sum_last))]
+        active_growth = [(active_rate_current[i] - active_rate_last[i]) / active_rate_last[i] for i in range(len(active_rate_current))]
         end = time.time()
         print "Task time: " + str(end - start) + " seconds..."
         return Response({
             "active_rate_last": active_rate_last,
             "active_rate": active_rate_current,
+            "num_cust_last": num_cust_last,
+            "num_cust": num_cust,
             "meeting_id_last": meeting_id_last,
-            "meeting_id": meeting_id
+            "meeting_id": meeting_id,
+            "cumulative_growth_rate_of_active_rate": active_growth
         })
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
