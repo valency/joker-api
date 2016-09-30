@@ -18,6 +18,7 @@ ACTIVE = dict()
 CUST_ANALYSIS = dict()
 # New cache
 NEW_CUST_SUMMARY = dict()
+NEW_CUST = dict()
 BET_TYPE = dict()
 
 
@@ -519,25 +520,46 @@ def active_analysis(request):
 # Below is new APIs
 def get_new_cust_summary_by_season(season):
     global NEW_CUST_SUMMARY
-    if season not in NEW_CUST_SUMMARY:
-        NEW_CUST_SUMMARY[season] = create_new_cust_summary_dict(season)
-    return NEW_CUST_SUMMARY[season]
+    global NEW_CUST
+    if season not in NEW_CUST_SUMMARY or season not in NEW_CUST:
+        NEW_CUST_SUMMARY[season], NEW_CUST[season] = create_new_cust_summary_dict(season)
+    return NEW_CUST_SUMMARY[season], NEW_CUST[season]
 
 
 def create_new_cust_summary_dict(season):
     print(colorize("Creating new customer summary cache for season " + str(season) + "...", fg="green"))
+    new_dict = dict()
     summary_dict = dict()
     start = time.time()
-    stat_result = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N", cust_id__is_new_cust=1).values("global_mtg_seqno", "cust_id__segment_code").annotate(Avg("global_mtg_seqno__season_mtg_seqno"), Count("cust_id"), Sum("standard_turnover"), Sum("exotic_turnover"), Sum("standard_betline"), Sum("exotic_betline"), Sum("race_num"), Sum("active_rate_ytd"), Sum("active_mtg_ytd"), Sum("standard_turnover_ytd"), Sum("exotic_turnover_ytd"), Sum("standard_betline_ytd"), Sum("exotic_betline_ytd")).order_by("global_mtg_seqno")
-    for value_list in stat_result:
+    cust = Customer.objects.values("cust_id", "segment_code", "is_new_cust")
+    for c in cust:
+        if c["segment_code"] is None:
+            c["segment_code"] = "other"
+        if not new_dict.has_key(c["segment_code"]):
+            new_dict[c["segment_code"]] = dict()
+            for k in c["is_new_cust"].keys():
+                new_dict[c["segment_code"]][int(k)] = 0
+        for k in c["is_new_cust"].keys():
+            new_dict[c["segment_code"]][int(k)] += c["is_new_cust"][k]
+    summary = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N")
+    stat_cust = summary.values("cust_id", "global_mtg_seqno", "cust_id__segment_code", "cust_id__is_new_cust", "global_mtg_seqno__season_mtg_seqno", "active_rate_ytd").order_by("global_mtg_seqno__season_mtg_seqno")
+    for value_list in stat_cust:
         if value_list["cust_id__segment_code"] is None:
             value_list["cust_id__segment_code"] = "other"
         if not summary_dict.has_key(value_list["cust_id__segment_code"]):
             summary_dict[value_list["cust_id__segment_code"]] = dict()
-        summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]] = value_list
+        if value_list["global_mtg_seqno__season_mtg_seqno"] <= len(cust[0]["is_new_cust"].keys()):
+            if not summary_dict[value_list["cust_id__segment_code"]].has_key(value_list["global_mtg_seqno"]):
+                summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]] = dict()
+                summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["season_mtg_seqno"] = value_list["global_mtg_seqno__season_mtg_seqno"]
+                summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["num_active"] = 0
+                summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["active_rate_ytd"] = 0.0
+            if value_list["cust_id__is_new_cust"][str(value_list["global_mtg_seqno__season_mtg_seqno"])] == 1:
+                summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["num_active"] += 1
+                summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["active_rate_ytd"] += float(value_list["active_rate_ytd"])
     end = time.time()
     print(colorize("Creating summary cache takes " + str(end - start) + " seconds.", fg="green"))
-    return summary_dict
+    return summary_dict, new_dict
 
 
 def get_bet_type_by_season(season):
@@ -569,57 +591,53 @@ def create_bet_type_dict(season):
 
 @api_view(['GET'])
 def active_rate_new_cust(request):
-    if "season" in request.GET and "type" in request.GET:
+    if "season" in request.GET:
         start = time.time()
         season = int(request.GET["season"])
-        summary = get_new_cust_summary_by_season(season)
-        summary_last = get_new_cust_summary_by_season(season - 1)
+        summary, new_cust = get_new_cust_summary_by_season(season)
+        summary_last, new_cust_last = get_new_cust_summary_by_season(season - 1)
         if "segment" in request.GET:
             segment = request.GET["segment"].split(",")
         else:
             segment = summary.keys()
-        global_mtg_seqno = summary[summary.keys()[0]].keys()
+        global_mtg_seqno = summary[summary.keys()[1]].keys()
         global_mtg_seqno.sort()
-        global_mtg_seqno_last = summary_last[summary_last.keys()[0]].keys()
+        global_mtg_seqno_last = summary_last[summary_last.keys()[1]].keys()
         global_mtg_seqno_last.sort()
-        num_cust = [0 for i in range(len(global_mtg_seqno))]
-        num_cust_last = [0 for i in range(len(global_mtg_seqno))]
-        active_rate_sum = [0 for i in range(len(global_mtg_seqno))]
-        active_rate_sum_last = [0 for i in range(len(global_mtg_seqno))]
+        num_new = [0 for i in range(len(global_mtg_seqno))]
+        num_new_last = [0 for i in range(len(global_mtg_seqno))]
+        num_active = [0 for i in range(len(global_mtg_seqno))]
+        num_active_last = [0 for i in range(len(global_mtg_seqno))]
+        active_rate_sum = [0.0 for i in range(len(global_mtg_seqno))]
+        active_rate_sum_last = [0.0 for i in range(len(global_mtg_seqno))]
         meeting_id = [-1 for i in range(len(global_mtg_seqno))]
         meeting_id_last = [-1 for i in range(len(global_mtg_seqno))]
         for i in range(len(global_mtg_seqno)):
             for s in segment:
                 if summary.has_key(s) and summary[s].has_key(global_mtg_seqno[i]):
-                    meeting_id[i] = int(summary[s][global_mtg_seqno[i]]["global_mtg_seqno__season_mtg_seqno__avg"])
-                    num_cust[i] += summary[s][global_mtg_seqno[i]]["cust_id__count"]
-                    active_rate_sum[i] += summary[s][global_mtg_seqno[i]]["active_rate_ytd__sum"]
-                if request.GET["type"] == "year":
-                    if summary_last.has_key(s) and summary_last[s].has_key(global_mtg_seqno_last[i]):
-                        meeting_id_last[i] = int(summary_last[s][global_mtg_seqno_last[i]]["global_mtg_seqno__season_mtg_seqno__avg"])
-                        num_cust_last[i] += summary_last[s][global_mtg_seqno_last[i]]["cust_id__count"]
-                        active_rate_sum_last[i] += summary_last[s][global_mtg_seqno_last[i]]["active_rate_ytd__sum"]
-                elif request.GET["type"] == "month":
-                    if i < 16:
-                        if summary_last.has_key(s) and summary_last[s].has_key(global_mtg_seqno[i] - 16):
-                            meeting_id_last[i] = int(summary_last[s][global_mtg_seqno[i] - 16]["global_mtg_seqno__season_mtg_seqno__avg"])
-                            num_cust_last[i] += summary_last[s][global_mtg_seqno[i] - 16]["cust_id__count"]
-                            active_rate_sum_last[i] += summary_last[s][global_mtg_seqno[i] - 16]["active_rate_ytd__sum"]
-                    else:
-                        if summary.has_key(s) and summary[s].has_key(global_mtg_seqno[i] - 16):
-                            meeting_id_last[i] = int(summary[s][global_mtg_seqno[i] - 16]["global_mtg_seqno__season_mtg_seqno__avg"])
-                            num_cust_last[i] += summary[s][global_mtg_seqno[i] - 16]["cust_id__count"]
-                            active_rate_sum_last[i] += summary[s][global_mtg_seqno[i] - 16]["active_rate_ytd__sum"]
-        active_rate_current = [float(active_rate_sum[i]) / float(num_cust[i]) for i in range(len(active_rate_sum))]
-        active_rate_last = [float(active_rate_sum_last[i]) / float(num_cust_last[i]) for i in range(len(active_rate_sum_last))]
+                    meeting_id[i] = summary[s][global_mtg_seqno[i]]["season_mtg_seqno"]
+                    num_active[i] += summary[s][global_mtg_seqno[i]]["num_active"]
+                    active_rate_sum[i] += summary[s][global_mtg_seqno[i]]["active_rate_ytd"]
+                if new_cust.has_key(s) and new_cust[s].has_key(i):
+                    num_new[i] += new_cust[s][i]
+                if summary_last.has_key(s) and summary_last[s].has_key(global_mtg_seqno_last[i]):
+                    meeting_id_last[i] = int(summary_last[s][global_mtg_seqno_last[i]]["season_mtg_seqno"])
+                    num_active_last[i] += summary_last[s][global_mtg_seqno_last[i]]["num_active"]
+                    active_rate_sum_last[i] += summary_last[s][global_mtg_seqno_last[i]]["active_rate_ytd"]
+                if new_cust_last.has_key(s) and new_cust_last[s].has_key(i):
+                    num_new_last[i] += new_cust_last[s][i]
+        active_rate_current = [float(active_rate_sum[i]) / float(num_active[i]) for i in range(len(active_rate_sum))]
+        active_rate_last = [float(active_rate_sum_last[i]) / float(num_active_last[i]) for i in range(len(active_rate_sum_last))]
         active_growth = [(active_rate_current[i] - active_rate_last[i]) / active_rate_last[i] for i in range(len(active_rate_current))]
         end = time.time()
         print "Task time: " + str(end - start) + " seconds..."
         return Response({
             "active_rate_last": active_rate_last,
             "active_rate": active_rate_current,
-            "num_cust_last": num_cust_last,
-            "num_cust": num_cust,
+            "num_new_last": num_new_last,
+            "num_new": num_new,
+            "num_active_last": num_active_last,
+            "num_active": num_active,
             "meeting_id_last": meeting_id_last,
             "meeting_id": meeting_id,
             "cumulative_growth_rate_of_active_rate": active_growth
