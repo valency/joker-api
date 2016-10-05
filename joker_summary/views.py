@@ -531,30 +531,33 @@ def create_new_cust_summary_dict(season):
     new_dict = dict()
     summary_dict = dict()
     start = time.time()
-    cust = Customer.objects.values("cust_id", "segment_code", "is_new_cust")
+    cust = Customer.objects.values("cust_id", "segment_code", "is_new_cust_ytd", "is_new_cust_pytd")
     for c in cust:
         if c["segment_code"] is None:
             c["segment_code"] = "other"
         if not new_dict.has_key(c["segment_code"]):
             new_dict[c["segment_code"]] = dict()
-            for k in c["is_new_cust"].keys():
-                new_dict[c["segment_code"]][int(k)] = 0
-        for k in c["is_new_cust"].keys():
-            new_dict[c["segment_code"]][int(k)] += c["is_new_cust"][k]
+            for k in c["is_new_cust_ytd"].keys():
+                new_dict[c["segment_code"]][int(k)] = dict()
+                new_dict[c["segment_code"]][int(k)]["is_new_cust_ytd"] = 0
+                new_dict[c["segment_code"]][int(k)]["is_new_cust_pytd"] = 0
+        for k in c["is_new_cust_ytd"].keys():
+            new_dict[c["segment_code"]][int(k)]["is_new_cust_ytd"] += c["is_new_cust_ytd"][k]
+            new_dict[c["segment_code"]][int(k)]["is_new_cust_pytd"] += c["is_new_cust_pytd"][k]
     summary = Summary.objects.filter(global_mtg_seqno__season=season, global_mtg_seqno__mtg_status="N")
-    stat_cust = summary.values("cust_id", "global_mtg_seqno", "cust_id__segment_code", "cust_id__is_new_cust", "global_mtg_seqno__season_mtg_seqno", "active_rate_ytd").order_by("global_mtg_seqno__season_mtg_seqno")
+    stat_cust = summary.values("cust_id", "global_mtg_seqno", "cust_id__segment_code", "cust_id__is_new_cust_ytd", "global_mtg_seqno__season_mtg_seqno", "active_rate_ytd").order_by("global_mtg_seqno__season_mtg_seqno")
     for value_list in stat_cust:
         if value_list["cust_id__segment_code"] is None:
             value_list["cust_id__segment_code"] = "other"
         if not summary_dict.has_key(value_list["cust_id__segment_code"]):
             summary_dict[value_list["cust_id__segment_code"]] = dict()
-        if value_list["global_mtg_seqno__season_mtg_seqno"] <= len(cust[0]["is_new_cust"].keys()):
+        if value_list["global_mtg_seqno__season_mtg_seqno"] <= len(cust[0]["is_new_cust_ytd"].keys()):
             if not summary_dict[value_list["cust_id__segment_code"]].has_key(value_list["global_mtg_seqno"]):
                 summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]] = dict()
                 summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["season_mtg_seqno"] = value_list["global_mtg_seqno__season_mtg_seqno"]
                 summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["num_active"] = 0
                 summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["active_rate_ytd"] = 0.0
-            if value_list["cust_id__is_new_cust"][str(value_list["global_mtg_seqno__season_mtg_seqno"])] == 1:
+            if value_list["cust_id__is_new_cust_ytd"][str(value_list["global_mtg_seqno__season_mtg_seqno"])] == 1:
                 summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["num_active"] += 1
                 summary_dict[value_list["cust_id__segment_code"]][value_list["global_mtg_seqno"]]["active_rate_ytd"] += float(value_list["active_rate_ytd"])
     end = time.time()
@@ -619,13 +622,13 @@ def active_rate_new_cust(request):
                     num_active[i] += summary[s][global_mtg_seqno[i]]["num_active"]
                     active_rate_sum[i] += summary[s][global_mtg_seqno[i]]["active_rate_ytd"]
                 if new_cust.has_key(s) and new_cust[s].has_key(i):
-                    num_new[i] += new_cust[s][i]
+                    num_new[i] += new_cust[s][i]["is_new_cust_ytd"]
                 if summary_last.has_key(s) and summary_last[s].has_key(global_mtg_seqno_last[i]):
                     meeting_id_last[i] = int(summary_last[s][global_mtg_seqno_last[i]]["season_mtg_seqno"])
                     num_active_last[i] += summary_last[s][global_mtg_seqno_last[i]]["num_active"]
                     active_rate_sum_last[i] += summary_last[s][global_mtg_seqno_last[i]]["active_rate_ytd"]
                 if new_cust_last.has_key(s) and new_cust_last[s].has_key(i):
-                    num_new_last[i] += new_cust_last[s][i]
+                    num_new_last[i] += new_cust[s][i]["is_new_cust_pytd"]
         active_rate_current = [float(active_rate_sum[i]) / float(num_active[i]) for i in range(len(active_rate_sum))]
         active_rate_last = [float(active_rate_sum_last[i]) / float(num_active_last[i]) for i in range(len(active_rate_sum_last))]
         active_growth = [(active_rate_current[i] - active_rate_last[i]) / active_rate_last[i] for i in range(len(active_rate_current))]

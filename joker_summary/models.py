@@ -9,7 +9,8 @@ class Customer(models.Model):
     segment_code = models.TextField(db_column='segment_code', blank=True, null=True)
     age = models.IntegerField(db_column='age', blank=True, null=True)
     registration_date = models.DateTimeField(db_column='registration_date', blank=True, null=True)
-    is_new_cust = models.IntegerField(db_column='is_new_cust', blank=True, null=True)
+    is_new_cust_ytd = JSONField(db_column='is_new_cust_ytd', blank=True, null=True)
+    is_new_cust_pytd = JSONField(db_column='is_new_cust_pytd', blank=True, null=True)
     major_channel = models.TextField(db_column='major_channel', blank=True, null=True)
 
     class Meta:
