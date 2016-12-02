@@ -8,6 +8,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
+        fields = '__all__'
 
 
 class CustomerSetSerializer(serializers.ModelSerializer):
@@ -16,3 +17,4 @@ class CustomerSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomerSet
+        fields = '__all__'

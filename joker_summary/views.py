@@ -1,15 +1,14 @@
 import time
-import numpy
 from collections import Counter
 
-from django.db.models import Avg, Sum, Min, Max
-from django.db.models import Count
-from django.utils.termcolors import colorize
+import numpy
+from django.db.models import Max
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from joker_summary.serializers import *
+
 
 # SUMMARY = dict()
 # CHANNEL = dict()
@@ -321,7 +320,8 @@ def active_rate(request):
         active_rate_current = [float(active_rate_sum[i]) / float(num_cust[i]) for i in range(len(active_rate_sum))]
         active_rate_last = [float(active_rate_sum_last[i]) / float(num_cust_last[i]) for i in range(len(active_rate_sum_last))]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "active_rate_last": active_rate_last,
             "active_rate": active_rate_current,
@@ -353,7 +353,8 @@ def channel_shares(request):
         std_ratio = [s / sum(std_turnover) for s in std_turnover]
         exo_ratio = [s / sum(exo_turnover) for s in exo_turnover]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "major_channel": major_channel,
             "standard_turnover_ytd": std_ratio,
@@ -396,7 +397,8 @@ def wakeup_rate(request):
         wakeup_rate = [float(num) / float(total_num) for num in wakeup_num]
         wakeup_rate_last = [float(num) / float(total_num_last) for num in wakeup_num_last]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "wakeup_rate_previous_season": wakeup_rate_last,
             "wakeup_rate_this_season": wakeup_rate
@@ -449,7 +451,8 @@ def growth_in_detail(request):
                     if summary_last[s][global_mtg_seqno_last[i]]["sum_active_mtg_ytd"] > num_meeting_last:
                         num_meeting_last = summary_last[s][global_mtg_seqno_last[i]]["sum_active_mtg_ytd"]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "total_investment": [int(s * 100 / total_investment_last) for s in [total_investment_last, total_investment]],
             "number_of_customers": [int(float(s * 100) / float(num_cust_last)) for s in [num_cust_last, num_cust]],
@@ -505,7 +508,8 @@ def month_on_month_growth(request):
             std_growth.append(float(std_value[i] - std_value_last[i]) / float(std_value_last[i]))
             exo_growth.append(float(exo_value[i] - exo_value_last[i]) / float(exo_value_last[i]))
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "standard_" + field: {
                 "standard_" + field + "_current": std_value,
@@ -552,7 +556,8 @@ def active_analysis(request):
                 if cust_analysis_last.has_key(s):
                     num_cust_last[i] += cust_analysis_last[s][global_mtg_seqno_last[i]][cust_type]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "num_cust_previous_season": num_cust_last,
             "num_cust_this_season": num_cust
@@ -703,7 +708,8 @@ def active_rate_new_cust(request):
         active_rate_last = [float(active_rate_sum_last[i]) / float(num_active_last[i]) for i in range(len(active_rate_sum_last))]
         active_growth = [(active_rate_current[i] - active_rate_last[i]) / active_rate_last[i] for i in range(len(active_rate_current))]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "active_rate_last": active_rate_last,
             "active_rate": active_rate_current,
@@ -740,7 +746,8 @@ def active_rate_latest(request):
             hist = numpy.divide(hist, [float(len(summary))])
             bin_edges = bin_edges.tolist()
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "hist": hist,
             "bin_edges": bin_edges
@@ -767,7 +774,8 @@ def bet_type(request):
                     turnover[i] += bettype[s][major_type[i]]["sum_turnover"]
         ratio = [s / sum(turnover) for s in turnover]
         end = time.time()
-        print "Task time: " + str(end - start) + " seconds..."
+        print
+        "Task time: " + str(end - start) + " seconds..."
         return Response({
             "major_type": major_type,
             "turnover_ytd": ratio,
